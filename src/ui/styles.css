@@ -192,6 +192,7 @@ button { font: inherit; cursor: pointer; }
   transition: opacity 0.15s, transform 0.2s;
 }
 
+.stage.results .hud-banner { display: none; }
 .hud-banner.show { opacity: 1; transform: scale(1); }
 
 .hud-bottom {

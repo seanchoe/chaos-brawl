@@ -73,6 +73,7 @@ export function mountBattle({ root, config, onExit }) {
 
   function showResults() {
     resultShown = true;
+    stage.classList.add('results');
     showOverlay(bannerFor(controller.match), [
       { label: 'Rematch', onClick: rematch },
       { label: 'Back', onClick: exit },
@@ -85,6 +86,7 @@ export function mountBattle({ root, config, onExit }) {
     controller = createBattleController(config);
     view = createBattleView(gfx.scene, { tintP2 });
     resultShown = false;
+    stage.classList.remove('results');
     loop.resume();
     hideOverlay();
     resetInputFocus();
