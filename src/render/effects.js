@@ -104,6 +104,10 @@ export function createPopups(container) {
       list = list.filter((p) => p.age < POPUP_LIFE);
     },
     get count() { return list.length; },
+    clear() {
+      for (const p of list) p.el.remove();
+      list = [];
+    },
     dispose() {
       layer.remove();
       list = [];
@@ -160,6 +164,10 @@ export function createEffects({ scene, container }) {
     update(dt, camera, width, height) {
       particles.update(dt);
       popups.update(dt, camera, width, height);
+    },
+    clear() {
+      particles.clear();
+      popups.clear();
     },
     dispose() {
       particles.dispose();

@@ -72,6 +72,19 @@ describe('popups', () => {
     expect(popups.count).toBe(0);
     expect(container.querySelectorAll('.popup')).toHaveLength(0);
   });
+
+  it('clear removes all popups but keeps the layer', () => {
+    const container = document.createElement('div');
+    const popups = createPopups(container);
+    popups.show('A', { x: 0, y: 2, z: 0 });
+    popups.show('B', { x: 0, y: 2, z: 0 });
+    popups.clear();
+    expect(popups.count).toBe(0);
+    expect(container.querySelectorAll('.popup')).toHaveLength(0);
+    expect(container.querySelector('.popup-layer')).not.toBeNull();
+    popups.show('C', { x: 0, y: 2, z: 0 });
+    expect(container.querySelectorAll('.popup')).toHaveLength(1);
+  });
 });
 
 describe('createEffects', () => {
@@ -86,6 +99,17 @@ describe('createEffects', () => {
     effects.handleEvents([{ type: 'hit', targetId: 'p2', damage: 5, popup: 'ZAP!', pos: { x: 3, y: 0, z: 0 } }], world);
     expect(container.querySelector('.popup').textContent).toBe('ZAP!');
     expect(effects.particles.count).toBeGreaterThan(0);
+  });
+
+  it('clear removes particles and popups and stays usable', () => {
+    const { container, effects } = setup();
+    effects.handleEvents([{ type: 'ko', targetId: 'p2' }], world);
+    effects.clear();
+    expect(effects.particles.count).toBe(0);
+    expect(effects.popups.count).toBe(0);
+    expect(container.querySelectorAll('.popup')).toHaveLength(0);
+    effects.handleEvents([{ type: 'ko', targetId: 'p2' }], world);
+    expect(effects.particles.count).toBeGreaterThanOrEqual(40);
   });
 
   it('knockouts make a confetti burst', () => {
