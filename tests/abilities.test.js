@@ -111,6 +111,14 @@ describe('primitives', () => {
     expect(pet.strikeAnim).not.toBe(null);
   });
 
+  it('strike misses an airborne opponent', () => {
+    const { world, f1, f2 } = duel();
+    f2.pos.y = 2;
+    const pet = { pos: { x: 1, y: 0, z: 0 }, facing: 0, strikeAnim: null };
+    runStep(world, f1, { type: 'strike', damage: 4, range: 2 }, pet, 1);
+    expect(f2.energy).toBe(100);
+  });
+
   it('blink teleports away from the opponent instantly', () => {
     const { world, f1 } = duel();
     runStep(world, f1, { type: 'dash', direction: 'escape', distance: 5, duration: 0 }, f1, 1);
