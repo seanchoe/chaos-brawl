@@ -28,6 +28,7 @@ export function createRenderer(container) {
   const size = () => ({ width: container.clientWidth || window.innerWidth, height: container.clientHeight || window.innerHeight });
   const resize = () => {
     const { width, height } = size();
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(width, height);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
