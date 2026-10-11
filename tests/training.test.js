@@ -77,6 +77,15 @@ describe('training', () => {
     expect(s.world.fighters[0].infiniteEnergy).toBe(true);
   });
 
+  it('ignores an invalid bot behavior', () => {
+    const s = sparkle({ options: { botBehavior: 'banana' } });
+    expect(s.options.botBehavior).toBe('still');
+    setOption(s, 'botBehavior', 'walk');
+    expect(s.options.botBehavior).toBe('walk');
+    setOption(s, 'botBehavior', 'moonwalk');
+    expect(s.options.botBehavior).toBe('walk');
+  });
+
   it('block behavior raises a shield every few seconds', () => {
     const s = sparkle({ options: { botBehavior: 'block' } });
     runTraining(s, 2.1);
