@@ -1,3 +1,5 @@
+import { stepWorld } from '../src/logic/simulation.js';
+import { DT } from '../src/logic/constants.js';
 import { createFighter } from '../src/logic/fighter.js';
 import { createWorld } from '../src/logic/world.js';
 
@@ -17,4 +19,9 @@ export function duel({ a = {}, b = {} } = {}) {
   const f1 = createFighter({ id: 'p1', character: a.character ?? TEST_CHAR, weapon: a.weapon ?? null, pos: a.pos ?? { x: -2, y: 0, z: 0 } });
   const f2 = createFighter({ id: 'p2', character: b.character ?? TEST_CHAR, weapon: b.weapon ?? null, pos: b.pos ?? { x: 2, y: 0, z: 0 } });
   return { world: createWorld([f1, f2]), f1, f2 };
+}
+
+export function run(world, seconds) {
+  const steps = Math.round(seconds / DT);
+  for (let i = 0; i < steps; i++) stepWorld(world, DT);
 }
