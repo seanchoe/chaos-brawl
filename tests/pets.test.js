@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createPet, PET_FIRST_DELAY } from '../src/logic/pets.js';
+import { createPet, resetPet, PET_FIRST_DELAY } from '../src/logic/pets.js';
 import { getPet } from '../src/data/pets.js';
 import { duel, run } from './helpers.js';
 
@@ -79,5 +79,15 @@ describe('pets', () => {
     f1.ko = true;
     run(world, 3);
     expect(f2.energy).toBe(100);
+  });
+
+  it('spawns behind its owner, even when the owner faces -x', () => {
+    const { f2 } = duel({ a: { pos: { x: -5, y: 0, z: 0 } }, b: { pos: { x: 5, y: 0, z: 0 } } });
+    expect(f2.facing).toBeCloseTo(Math.PI);
+    const pet = createPet(getPet('biscuit'), f2, 0);
+    expect(pet.pos.x).toBeGreaterThan(5);
+    pet.pos = { x: 0, y: 0, z: 0 };
+    resetPet(pet, f2, 0);
+    expect(pet.pos.x).toBeGreaterThan(5);
   });
 });
