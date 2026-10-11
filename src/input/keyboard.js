@@ -27,12 +27,17 @@ export function createKeyboard(target = globalThis.window) {
   const pressed = new Set();
 
   const onDown = (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.target?.closest?.('input, select, textarea, button') && e.code !== 'Escape') return;
     if (GAME_KEYS.has(e.code)) e.preventDefault();
     if (!e.repeat) pressed.add(e.code);
     down.add(e.code);
   };
-  const onUp = (e) => { down.delete(e.code); };
+  const onUp = (e) => {
+    // macOS sends no keyup for letters while Cmd is held, so drop everything when Cmd is released.
+    if (e.code === 'MetaLeft' || e.code === 'MetaRight') down.clear();
+    else down.delete(e.code);
+  };
   const onBlur = () => { down.clear(); };
 
   target.addEventListener('keydown', onDown);

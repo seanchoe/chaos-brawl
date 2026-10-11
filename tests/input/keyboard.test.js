@@ -106,6 +106,30 @@ describe('createKeyboard with form controls', () => {
   });
 });
 
+describe('createKeyboard modifiers', () => {
+  it('ignores keydown with meta, ctrl or alt held', () => {
+    const target = new EventTarget();
+    const kb = createKeyboard(target);
+    for (const mod of ['metaKey', 'ctrlKey', 'altKey']) {
+      const e = press(target, 'KeyA', 'keydown', { [mod]: true });
+      expect(e.defaultPrevented).toBe(false);
+      expect(kb.input('p1').moveX).toBe(0);
+    }
+  });
+
+  it('clears held keys when Meta is released', () => {
+    const target = new EventTarget();
+    const kb = createKeyboard(target);
+    press(target, 'KeyD');
+    expect(kb.input('p1').moveX).toBe(1);
+    press(target, 'MetaLeft', 'keyup');
+    expect(kb.input('p1').moveX).toBe(0);
+    press(target, 'KeyD');
+    press(target, 'MetaRight', 'keyup');
+    expect(kb.input('p1').moveX).toBe(0);
+  });
+});
+
 describe('keyLabel', () => {
   it('gives short friendly labels', () => {
     expect(keyLabel('KeyF')).toBe('F');
