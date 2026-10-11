@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   SAVE_KEY, SAVE_VERSION, STARTING_COINS, DEFAULT_TRAINING_OPTIONS,
-  createSave, createMemoryStorage, getStorage, loadSave, writeSave, resetSave,
+  BOT_BEHAVIORS, createSave, createMemoryStorage, getStorage, loadSave, writeSave, resetSave,
 } from '../src/logic/save.js';
 
 describe('save', () => {
@@ -82,5 +82,43 @@ describe('save', () => {
     writeSave(storage, { ...createSave(), coins: 999 });
     expect(resetSave(storage)).toEqual(createSave());
     expect(loadSave(storage).coins).toBe(STARTING_COINS);
+  });
+});
+
+describe('save validation', () => {
+  const load = (extra) => {
+    const storage = createMemoryStorage();
+    storage.setItem(SAVE_KEY, JSON.stringify({ version: SAVE_VERSION, ...extra }));
+    return loadSave(storage);
+  };
+
+  it('exports the bot behaviors', () => {
+    expect(BOT_BEHAVIORS).toEqual(['still', 'walk', 'dodge', 'block']);
+  });
+
+  it('de-duplicates owned pets', () => {
+    expect(load({ ownedPets: ['biscuit', 'biscuit'] }).ownedPets).toEqual(['biscuit']);
+  });
+
+  it('keeps lastPets only when null or owned', () => {
+    const s = load({ ownedPets: ['biscuit'], lastPets: { p1: 'biscuit', p2: 'unowned' } });
+    expect(s.lastPets).toEqual({ p1: 'biscuit', p2: null });
+    expect(load({ ownedPets: ['biscuit'], lastPets: { p1: null, p2: 7 } }).lastPets).toEqual({ p1: null, p2: null });
+    expect(load({ ownedPets: ['biscuit'], lastPets: 'oops' }).lastPets).toEqual({ p1: null, p2: null });
+    expect(load({ lastPets: null }).lastPets).toEqual({ p1: null, p2: null });
+  });
+
+  it('only accepts a boolean muted setting', () => {
+    expect(load({ settings: { muted: true } }).settings).toEqual({ muted: true });
+    expect(load({ settings: { muted: 'yes', extra: 1 } }).settings).toEqual({ muted: false });
+    expect(load({ settings: 'x' }).settings).toEqual({ muted: false });
+  });
+
+  it('validates training options', () => {
+    const ok = load({ training: { botBehavior: 'dodge', noCooldowns: true, infiniteEnergy: true, showHitAreas: true, junk: 1 } });
+    expect(ok.training).toEqual({ botBehavior: 'dodge', noCooldowns: true, infiniteEnergy: true, showHitAreas: true });
+    const bad = load({ training: { botBehavior: 'fly', noCooldowns: 1, infiniteEnergy: 'true', showHitAreas: null } });
+    expect(bad.training).toEqual(DEFAULT_TRAINING_OPTIONS);
+    expect(load({ training: 5 }).training).toEqual(DEFAULT_TRAINING_OPTIONS);
   });
 });
