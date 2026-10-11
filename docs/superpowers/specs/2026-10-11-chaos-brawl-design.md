@@ -193,7 +193,7 @@ Tier *n* unlocks at level `1` (tier 1) and `10 × (n − 1)` for tiers 2–11 (1
 - Each character has its own level (1–100) and XP, saved in `localStorage`. Progress is per device, shared by whoever plays.
 - XP to go from level L to L+1: `40 + 2 × L`. About 3 wins reach level 10; about 90 wins reach level 100.
 - XP per match: win **150**, loss **75**, plus **+5 per round won**. In 2-player mode both characters earn XP. In Vs Computer, only Player 1's character earns XP.
-- **Level scaling:** damage multiplier `1 + 0.005 × (level − 1)` (up to +49.5% at level 100); move speed `+0.1% per level`. Special cooldowns scale the same as damage, so higher levels feel stronger without making specials unbeatable.
+- **Level scaling:** damage multiplier `1 + 0.005 × (level − 1)` (up to +49.5% at level 100); move speed `+0.1% per level`. Cooldowns do not change with level, so higher levels feel stronger without letting anyone spam specials.
 - **Weapon select:** before a match, each player picks any unlocked weapon tier for their character (defaults to the highest unlocked).
 - **Results screen:** shows XP gained, level-up animations, and a big "NEW WEAPON UNLOCKED!" celebration showing the new weapon and its special.
 - **Save robustness:** save data has a `version` field. Corrupt or missing data falls back to a fresh save without crashing. The settings menu has a "Reset progress" option with a confirm step.
