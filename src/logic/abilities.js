@@ -25,7 +25,7 @@ export function runSteps(world, caster, steps, source, scale) {
         world.events.push({ type: 'shape', shape: 'warning', pos: point, radius: step.radius, duration: step.delay });
       }
       schedule(world, step.delay, () => {
-        if (!caster.ko) runStep(world, caster, step, source, scale, point);
+        if (!caster.ko && !isDisabled(caster, world.time)) runStep(world, caster, step, source, scale, point);
       });
     } else {
       runStep(world, caster, step, source, scale, null);

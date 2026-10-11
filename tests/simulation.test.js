@@ -144,6 +144,35 @@ describe('timed primitives', () => {
     expect(f1.onGround).toBe(true);
   });
 
+  it('stun cancels an active dash before it can hit', () => {
+    const { world, f1, f2 } = duel();
+    runStep(world, f1, { type: 'dash', direction: 'forward', distance: 5, duration: 0.25, damage: 10, knockback: 3 }, f1, 1);
+    f1.status.stunUntil = world.time + 1;
+    run(world, 0.4);
+    expect(f1.dash).toBe(null);
+    expect(f2.energy).toBe(100);
+  });
+
+  it('a leap finishes its arc but does not burst if the leaper is frozen on landing', () => {
+    const { world, f1, f2 } = duel();
+    runStep(world, f1, { type: 'leap', duration: 0.6, radius: 2, damage: 10 }, f1, 1);
+    run(world, 0.3);
+    f1.status.freezeUntil = world.time + 1;
+    run(world, 0.4);
+    expect(f1.leap).toBe(null);
+    expect(f1.pos.y).toBe(0);
+    expect(f2.energy).toBe(100);
+  });
+
+  it('delayed steps are skipped if the caster is disabled when they fire', () => {
+    const step = { type: 'burst', at: 'target', delay: 0.5, radius: 1.5, damage: 10 };
+    const { world, f1, f2 } = duel({ a: { weapon: weaponWith([step]) } });
+    tryUseAbility(world, f1, 'basic');
+    f1.status.stunUntil = world.time + 1;
+    run(world, 0.6);
+    expect(f2.energy).toBe(100);
+  });
+
   it('shield runs its onEnd steps when it expires', () => {
     const { world, f1, f2 } = duel({ a: { weapon: weaponWith([shot], [{ type: 'shield', duration: 1, reduction: 1, onEnd: [{ type: 'burst', at: 'self', radius: 5, damage: 10 }] }]) } });
     tryUseAbility(world, f1, 'special');
