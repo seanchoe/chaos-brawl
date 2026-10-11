@@ -183,6 +183,17 @@ describe('timed primitives', () => {
     expect(f2.energy).toBe(90);
   });
 
+  it('recasting a shield runs the pending onEnd of the old one', () => {
+    const shieldStep = { type: 'shield', duration: 1, reduction: 1, onEnd: [{ type: 'burst', at: 'self', radius: 5, damage: 10 }] };
+    const { world, f1, f2 } = duel();
+    runStep(world, f1, shieldStep, f1, 1);
+    run(world, 0.5);
+    runStep(world, f1, shieldStep, f1, 1);
+    expect(f2.energy).toBe(90);
+    run(world, 1.1);
+    expect(f2.energy).toBe(80);
+  });
+
   it('delayed target burst can be dodged by moving', () => {
     const step = { type: 'burst', at: 'target', delay: 0.5, radius: 1.5, damage: 10 };
     const { world, f1, f2 } = duel({ a: { weapon: weaponWith([step]) } });
