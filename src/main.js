@@ -6,17 +6,23 @@ import { mountBattle } from './game/battleScreen.js';
 import { buildMatchConfig } from './game/battleController.js';
 
 const root = document.getElementById('app');
+const NO_3D_MESSAGE = "Your browser can't show 3D games. Try Chrome, Edge, Safari, or Firefox!";
 let lastChoice;
 
 function showStart() {
   renderQuickStart(root, (choice) => {
     lastChoice = choice;
-    mountBattle({ root, config: buildMatchConfig(choice), onExit: showStart });
+    try {
+      mountBattle({ root, config: buildMatchConfig(choice), onExit: showStart });
+    } catch {
+      // The renderer can still fail to start even when the up-front check passed.
+      showMessage(root, NO_3D_MESSAGE);
+    }
   }, lastChoice);
 }
 
 if (isWebGLAvailable()) {
   showStart();
 } else {
-  showMessage(root, "Your browser can't show 3D games. Try Chrome, Edge, Safari, or Firefox!");
+  showMessage(root, NO_3D_MESSAGE);
 }
