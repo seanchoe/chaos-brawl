@@ -59,6 +59,7 @@ export function createLoop({
       doc?.addEventListener('visibilitychange', onVisibility);
       generation += 1;
       frameId = raf(makeFrame(generation));
+      if (doc?.hidden) loop.pause();
     },
     stop() {
       running = false;

@@ -124,4 +124,17 @@ describe('createLoop', () => {
     expect(() => env.callbacks.shift()(100)).toThrow('bad step');
     expect(env.callbacks).toHaveLength(1);
   });
+
+  it('starts paused when the tab is already hidden', () => {
+    const env = fakeEnv();
+    env.doc.hidden = true;
+    const changes = [];
+    let steps = 0;
+    const loop = createLoop({ dt: DT, step: () => { steps += 1; }, render: () => {}, raf: env.raf, cancel: () => {}, now: () => 0, doc: env.doc, onPauseChange: (p) => changes.push(p) });
+    loop.start();
+    expect(loop.paused).toBe(true);
+    expect(changes).toEqual([true]);
+    env.callbacks.shift()(1000);
+    expect(steps).toBe(0);
+  });
 });
