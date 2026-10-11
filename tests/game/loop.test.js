@@ -108,4 +108,20 @@ describe('createLoop', () => {
     expect(steps).toBe(2);
     expect(env.callbacks).toHaveLength(1);
   });
+
+  it('keeps scheduling frames when render throws, and still propagates the error', () => {
+    const env = fakeEnv();
+    const loop = createLoop({ dt: DT, step: () => {}, render: () => { throw new Error('boom'); }, raf: env.raf, cancel: () => {}, now: () => 0, doc: env.doc });
+    loop.start();
+    expect(() => env.callbacks.shift()(16)).toThrow('boom');
+    expect(env.callbacks).toHaveLength(1);
+  });
+
+  it('keeps scheduling frames when step throws', () => {
+    const env = fakeEnv();
+    const loop = createLoop({ dt: DT, step: () => { throw new Error('bad step'); }, render: () => {}, raf: env.raf, cancel: () => {}, now: () => 0, doc: env.doc });
+    loop.start();
+    expect(() => env.callbacks.shift()(100)).toThrow('bad step');
+    expect(env.callbacks).toHaveLength(1);
+  });
 });

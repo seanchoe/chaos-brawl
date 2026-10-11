@@ -34,6 +34,8 @@ export function createLoop({
 
   function frame(t, gen) {
     if (!running || gen !== generation) return;
+    // Schedule first so an exception in step/render can't end the loop.
+    frameId = raf(makeFrame(generation));
     const seconds = Math.min(Math.max((t - last) / 1000, 0), MAX_FRAME);
     last = t;
     if (!paused) {
@@ -42,7 +44,6 @@ export function createLoop({
       for (let i = 0; i < r.steps; i++) step(dt);
     }
     render(seconds, paused);
-    frameId = raf(makeFrame(generation));
   }
 
   function onVisibility() {
