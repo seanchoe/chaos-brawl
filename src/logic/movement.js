@@ -27,6 +27,8 @@ export function updateFighter(world, f, dt) {
     return;
   }
 
+  if (f.dash && isDisabled(f, now)) f.dash = null;
+
   if (f.dash && !f.ko) {
     updateDash(world, f, opp, dt);
   } else if (!f.ko && !isDisabled(f, now)) {
@@ -75,7 +77,7 @@ function updateLeap(world, f) {
     f.velY = 0;
     f.onGround = true;
     f.leap = null;
-    runStep(world, f, { ...leap.step, type: 'burst', at: 'self' }, f, f.damageMult);
+    if (!isDisabled(f, world.time)) runStep(world, f, { ...leap.step, type: 'burst', at: 'self' }, f, f.damageMult);
   }
 }
 
