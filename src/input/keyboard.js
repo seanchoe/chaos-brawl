@@ -22,7 +22,7 @@ export function readInput(down, b) {
   };
 }
 
-export function createKeyboard(target = globalThis.window) {
+export function createKeyboard(target = globalThis.window, doc = globalThis.document) {
   const down = new Set();
   const pressed = new Set();
 
@@ -39,10 +39,13 @@ export function createKeyboard(target = globalThis.window) {
     else down.delete(e.code);
   };
   const onBlur = () => { down.clear(); };
+  const onVisibility = () => { if (doc?.hidden) down.clear(); };
 
   target.addEventListener('keydown', onDown);
   target.addEventListener('keyup', onUp);
   target.addEventListener('blur', onBlur);
+  target.addEventListener('pagehide', onBlur);
+  doc?.addEventListener('visibilitychange', onVisibility);
 
   return {
     input(player) {
@@ -60,6 +63,8 @@ export function createKeyboard(target = globalThis.window) {
       target.removeEventListener('keydown', onDown);
       target.removeEventListener('keyup', onUp);
       target.removeEventListener('blur', onBlur);
+      target.removeEventListener('pagehide', onBlur);
+      doc?.removeEventListener('visibilitychange', onVisibility);
       down.clear();
       pressed.clear();
     },

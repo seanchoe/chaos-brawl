@@ -130,6 +130,45 @@ describe('createKeyboard modifiers', () => {
   });
 });
 
+describe('createKeyboard page visibility', () => {
+  it('clears held keys when the document becomes hidden', () => {
+    const target = new EventTarget();
+    const doc = new EventTarget();
+    doc.hidden = false;
+    const kb = createKeyboard(target, doc);
+    press(target, 'KeyD');
+    doc.dispatchEvent(new Event('visibilitychange'));
+    expect(kb.input('p1').moveX).toBe(1);
+    doc.hidden = true;
+    doc.dispatchEvent(new Event('visibilitychange'));
+    expect(kb.input('p1').moveX).toBe(0);
+  });
+
+  it('clears held keys on pagehide', () => {
+    const target = new EventTarget();
+    const kb = createKeyboard(target, new EventTarget());
+    press(target, 'KeyD');
+    target.dispatchEvent(new Event('pagehide'));
+    expect(kb.input('p1').moveX).toBe(0);
+  });
+
+  it('removes the visibility and pagehide listeners on dispose', () => {
+    const target = new EventTarget();
+    const doc = new EventTarget();
+    doc.hidden = true;
+    const kb = createKeyboard(target, doc);
+    kb.dispose();
+    press(target, 'KeyD'); // not recorded after dispose
+    expect(kb.input('p1').moveX).toBe(0);
+    const removed = [];
+    const spyDoc = { addEventListener() {}, removeEventListener: (t) => removed.push(t) };
+    const spyTarget = { addEventListener() {}, removeEventListener: (t) => removed.push(t) };
+    createKeyboard(spyTarget, spyDoc).dispose();
+    expect(removed).toContain('visibilitychange');
+    expect(removed).toContain('pagehide');
+  });
+});
+
 describe('keyLabel', () => {
   it('gives short friendly labels', () => {
     expect(keyLabel('KeyF')).toBe('F');
