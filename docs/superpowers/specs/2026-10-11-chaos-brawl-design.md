@@ -117,9 +117,9 @@ A special may chain several primitives (e.g. `shield` then `burst` when it ends)
 
 | Character | Style | Base stats |
 |-----------|-------|-----------|
-| **Sir Sparkle** — little knight in pink/silver armor | Close-range melee | Speed medium, damage high |
+| **Sir Sparkle** — little knight in pink/silver armor | Close-range melee | Speed medium, damage highest (strongest hitter up close) |
 | **Bubbles** — tiny wizard with a big starry hat | Long-range magic | Speed medium, damage low, range long |
-| **Chef Pancake** — round chef with tall hat | Mid-range throwing | Speed slow, energy-tough (takes 10% less damage) |
+| **Chef Pancake** — round chef with tall hat | Mid-range throwing | Speed slow, damage medium-high, energy-tough (takes 10% less damage) |
 | **Robo Rex** — friendly robot dinosaur | Blasters | Speed fast, damage medium |
 
 Same-character mirror matches are allowed; Player 2 gets an alternate color tint.

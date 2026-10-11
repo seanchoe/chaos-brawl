@@ -77,7 +77,7 @@ export function updateAI(ai, world, me) {
   if (d > pref + 1) {
     plan.moveX = to.x;
     plan.moveZ = to.z;
-  } else if (d < pref - 1.5) {
+  } else if (d < pref - 2.5) {
     const r = Math.hypot(me.pos.x, me.pos.z);
     if (r >= ARENA_RADIUS - WALL_MARGIN) {
       // Pinned near the wall: slide along it (strafe direction) and drift back toward the centre.
