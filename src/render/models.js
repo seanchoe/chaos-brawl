@@ -62,8 +62,8 @@ export function buildFighterModel(character, weapon, { tint = false } = {}) {
 function addAccessory(root, id, { bodyMat, accentMat }) {
   switch (id) {
     case 'sparkle': {
-      const helmet = mesh(new THREE.SphereGeometry(0.43, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2), accentMat, 0, 1.6, 0);
-      const plume = mesh(new THREE.SphereGeometry(0.13, 10, 8), bodyMat, 0, 2.08, -0.05);
+      const helmet = mesh(new THREE.SphereGeometry(0.43, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2), accentMat, 0, 1.7, 0);
+      const plume = mesh(new THREE.SphereGeometry(0.13, 10, 8), bodyMat, 0, 2.18, -0.05);
       root.add(helmet, plume);
       break;
     }
@@ -83,7 +83,7 @@ function addAccessory(root, id, { bodyMat, accentMat }) {
       break;
     }
     case 'rex': {
-      const snout = mesh(new THREE.BoxGeometry(0.45, 0.25, 0.35), bodyMat, 0, 1.45, 0.4);
+      const snout = mesh(new THREE.BoxGeometry(0.45, 0.25, 0.35), bodyMat, 0, 1.38, 0.4);
       root.add(snout);
       [1.95, 1.45, 1.0].forEach((y) => {
         const spike = mesh(new THREE.ConeGeometry(0.1, 0.25, 8), accentMat, 0, y, -0.42);

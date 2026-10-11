@@ -93,3 +93,21 @@ describe('transparent projectiles', () => {
     expect(buildProjectileMesh('ball', 0.3).material.depthWrite).toBe(true);
   });
 });
+
+describe('face clearance', () => {
+  const eyeOf = (model) => model.children.find((o) => o.geometry?.parameters?.radius === 0.06);
+  const bottom = (o) => new THREE.Box3().setFromObject(o).min.y;
+  const top = (o) => new THREE.Box3().setFromObject(o).max.y;
+
+  it("Sir Sparkle's helmet does not cover the eyes", () => {
+    const model = buildFighterModel(getCharacter('sparkle'), null);
+    const helmet = model.children.find((o) => o.geometry?.type === 'SphereGeometry' && o.geometry.parameters.thetaLength === Math.PI / 2);
+    expect(bottom(helmet)).toBeGreaterThanOrEqual(top(eyeOf(model)) - 1e-6);
+  });
+
+  it("Rex's snout sits below the eyes", () => {
+    const model = buildFighterModel(getCharacter('rex'), null);
+    const snout = model.children.find((o) => o.geometry?.type === 'BoxGeometry');
+    expect(top(snout)).toBeLessThanOrEqual(bottom(eyeOf(model)) + 1e-6);
+  });
+});
