@@ -69,6 +69,17 @@ describe('updateAI', () => {
     expect(f1.input.moveX).toBeLessThan(0);
   });
 
+  it('slides along the wall instead of backing into it', () => {
+    const { world, f1 } = duel({
+      a: { character: getCharacter('bubbles'), weapon: getWeapon('bubbles', 1), pos: { x: 10.5, y: 0, z: 0 } },
+      b: { pos: { x: 8.5, y: 0, z: 0 } },
+    });
+    updateAI(createAI('medium', always(0.5)), world, f1);
+    const outward = { x: 1, z: 0 };
+    expect(f1.input.moveX * outward.x + f1.input.moveZ * outward.z).toBeLessThanOrEqual(0);
+    expect(Math.abs(f1.input.moveZ)).toBeGreaterThan(0.1);
+  });
+
   it('uses the special when ready and in reach', () => {
     const { world, f1 } = setup('rex', 3);
     updateAI(createAI('hard', always(0.5)), world, f1);

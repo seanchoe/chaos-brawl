@@ -1,4 +1,4 @@
-import { FIGHTER_RADIUS } from './constants.js';
+import { ARENA_RADIUS, FIGHTER_RADIUS } from './constants.js';
 import { CHARACTER_IDS } from '../data/characters.js';
 import { PET_IDS } from '../data/pets.js';
 import { MAX_LEVEL, tierForLevel } from './progression.js';
@@ -12,6 +12,8 @@ export const AI_SETTINGS = {
 };
 
 const TARGETED_REACH = 15;
+const WALL_MARGIN = 1.5;
+const WALL_INWARD = 0.5;
 const IDLE_INPUT = { moveX: 0, moveZ: 0, jump: false, attack: false, special: false };
 
 export function pickAIOpponent({ playerLevel, difficulty, playerHasPet, rng = Math.random }) {
@@ -76,8 +78,19 @@ export function updateAI(ai, world, me) {
     plan.moveX = to.x;
     plan.moveZ = to.z;
   } else if (d < pref - 1.5) {
-    plan.moveX = -to.x;
-    plan.moveZ = -to.z;
+    const r = Math.hypot(me.pos.x, me.pos.z);
+    if (r >= ARENA_RADIUS - WALL_MARGIN) {
+      // Pinned near the wall: slide along it (strafe direction) and drift back toward the centre.
+      const out = { x: me.pos.x / r, z: me.pos.z / r };
+      const mx = -out.z * ai.strafe - out.x * WALL_INWARD;
+      const mz = out.x * ai.strafe - out.z * WALL_INWARD;
+      const len = Math.hypot(mx, mz);
+      plan.moveX = mx / len;
+      plan.moveZ = mz / len;
+    } else {
+      plan.moveX = -to.x;
+      plan.moveZ = -to.z;
+    }
   } else {
     plan.moveX = -to.z * ai.strafe;
     plan.moveZ = to.x * ai.strafe;
