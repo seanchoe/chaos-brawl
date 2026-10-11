@@ -4,9 +4,9 @@ const SKY = 0x9bdcff;
 
 export function isWebGLAvailable({ doc = globalThis.document, win = globalThis } = {}) {
   try {
-    if (!win.WebGLRenderingContext) return false;
+    if (!win.WebGL2RenderingContext) return false;
     const canvas = doc.createElement('canvas');
-    return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+    return !!(canvas.getContext('webgl2'));
   } catch {
     return false;
   }

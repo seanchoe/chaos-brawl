@@ -6,14 +6,20 @@ import { showMessage } from '../../src/ui/messages.js';
 const fakeDoc = (getContext) => ({ createElement: () => ({ getContext }) });
 
 describe('isWebGLAvailable', () => {
-  it('is true when a WebGL context can be made', () => {
-    expect(isWebGLAvailable({ doc: fakeDoc(() => ({})), win: { WebGLRenderingContext: function W() {} } })).toBe(true);
+  it('is true when a WebGL2 context can be made', () => {
+    expect(isWebGLAvailable({ doc: fakeDoc(() => ({})), win: { WebGL2RenderingContext: function W() {} } })).toBe(true);
+  });
+
+  it('is false when only WebGL1 is available', () => {
+    const getContext = (type) => (type === 'webgl' ? {} : null);
+    expect(isWebGLAvailable({ doc: fakeDoc(getContext), win: { WebGLRenderingContext: function W() {} } })).toBe(false);
+    expect(isWebGLAvailable({ doc: fakeDoc(getContext), win: { WebGL2RenderingContext: function W() {}, WebGLRenderingContext: function W() {} } })).toBe(false);
   });
 
   it('is false without a context, without WebGL, or on errors', () => {
-    expect(isWebGLAvailable({ doc: fakeDoc(() => null), win: { WebGLRenderingContext: function W() {} } })).toBe(false);
+    expect(isWebGLAvailable({ doc: fakeDoc(() => null), win: { WebGL2RenderingContext: function W() {} } })).toBe(false);
     expect(isWebGLAvailable({ doc: fakeDoc(() => ({})), win: {} })).toBe(false);
-    expect(isWebGLAvailable({ doc: { createElement: () => { throw new Error('no'); } }, win: { WebGLRenderingContext: function W() {} } })).toBe(false);
+    expect(isWebGLAvailable({ doc: { createElement: () => { throw new Error('no'); } }, win: { WebGL2RenderingContext: function W() {} } })).toBe(false);
   });
 });
 
