@@ -1,6 +1,7 @@
 import { createRenderer } from '../render/renderer.js';
 import { buildArena } from '../render/arena.js';
 import { createBattleView } from '../render/view.js';
+import { disposeObject } from '../render/models.js';
 import { createEffects } from '../render/effects.js';
 import { computeCamera, smoothToward, CAMERA } from '../render/math.js';
 import { createHud, hudState, bannerFor } from '../ui/hud.js';
@@ -24,7 +25,8 @@ export function mountBattle({ root, config, onExit }) {
   root.innerHTML = '';
   const stage = el('div', 'stage', root);
   const gfx = createRenderer(stage);
-  gfx.scene.add(buildArena());
+  const arena = buildArena();
+  gfx.scene.add(arena);
 
   const tintP2 = config.p1.characterId === config.p2.characterId;
   let controller = createBattleController(config);
@@ -153,6 +155,7 @@ export function mountBattle({ root, config, onExit }) {
     effects.dispose();
     view.clear();
     hud.dispose();
+    disposeObject(arena);
     gfx.dispose();
     root.innerHTML = '';
     onExit();
