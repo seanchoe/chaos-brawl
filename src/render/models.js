@@ -207,6 +207,7 @@ export function buildStatusEffects() {
   guard.rotation.x = -Math.PI / 2;
 
   for (const piece of [shield, ice, stars, slow, guard]) {
+    if (piece !== guard) piece.traverse((o) => { o.castShadow = false; });
     piece.visible = false;
     group.add(piece);
   }

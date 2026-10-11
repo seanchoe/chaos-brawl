@@ -77,3 +77,12 @@ describe('disposeObject', () => {
     expect(m).toHaveBeenCalled();
   });
 });
+
+describe('status shadows', () => {
+  it('see-through status pieces do not cast shadows', () => {
+    const s = buildStatusEffects();
+    for (const piece of [s.shield, s.ice, s.slow, s.stars]) {
+      piece.traverse((o) => expect(o.castShadow).toBe(false));
+    }
+  });
+});
