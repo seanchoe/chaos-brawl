@@ -125,4 +125,11 @@ describe('battle view', () => {
       expect(m.emissiveIntensity).toBe(0);
     }
   });
+
+  it('swings the weapon forward (positive x rotation)', () => {
+    const { world, view } = setup();
+    view.handleEvents([{ type: 'ability', fighterId: 'p1', slot: 'basic', name: 'Sword Swing' }]);
+    view.sync(world, 0.11);
+    expect(view.fighterModel('p1').userData.parts.weaponMount.rotation.x).toBeGreaterThan(0);
+  });
 });

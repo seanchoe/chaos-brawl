@@ -67,7 +67,7 @@ export function createBattleView(scene, { tintP2 = false } = {}) {
     }
 
     e.swing = Math.max(0, e.swing - dt);
-    parts.weaponMount.rotation.x = e.swing > 0 ? -Math.sin((1 - e.swing / SWING_TIME) * Math.PI) * 1.6 : 0;
+    parts.weaponMount.rotation.x = e.swing > 0 ? Math.sin((1 - e.swing / SWING_TIME) * Math.PI) * 1.6 : 0;
 
     e.bounce = Math.max(0, e.bounce - dt);
     updateStatus(status, f, now, dt);
