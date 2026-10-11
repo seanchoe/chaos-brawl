@@ -45,7 +45,8 @@ export function buildArena() {
   const sun = new THREE.DirectionalLight(0xffffff, 2.2);
   sun.position.set(8, 18, 10);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.normalBias = 0.02;
   const s = ISLAND_RADIUS;
   Object.assign(sun.shadow.camera, { left: -s, right: s, top: s, bottom: -s, near: 1, far: 50 });
   sun.shadow.camera.updateProjectionMatrix();

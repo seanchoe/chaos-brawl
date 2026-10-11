@@ -13,3 +13,13 @@ describe('arena', () => {
     expect(lights.length).toBeGreaterThanOrEqual(2);
   });
 });
+
+describe('arena shadows', () => {
+  it('uses a sharp shadow map with a normal bias against acne', () => {
+    let sun;
+    buildArena().traverse((o) => { if (o.isDirectionalLight) sun = o; });
+    expect(sun.shadow.normalBias).toBe(0.02);
+    expect(sun.shadow.mapSize.x).toBe(2048);
+    expect(sun.shadow.mapSize.y).toBe(2048);
+  });
+});
