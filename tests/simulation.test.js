@@ -132,6 +132,18 @@ describe('timed primitives', () => {
     expect(f2.energy).toBe(90);
   });
 
+  it('a fighter KO\'d mid-leap falls back to the ground', () => {
+    const { world, f1 } = duel();
+    runStep(world, f1, { type: 'leap', duration: 0.6, radius: 2, damage: 10 }, f1, 1);
+    run(world, 0.3);
+    expect(f1.pos.y).toBeGreaterThan(1);
+    f1.ko = true;
+    run(world, 1);
+    expect(f1.leap).toBe(null);
+    expect(f1.pos.y).toBe(0);
+    expect(f1.onGround).toBe(true);
+  });
+
   it('shield runs its onEnd steps when it expires', () => {
     const { world, f1, f2 } = duel({ a: { weapon: weaponWith([shot], [{ type: 'shield', duration: 1, reduction: 1, onEnd: [{ type: 'burst', at: 'self', radius: 5, damage: 10 }] }]) } });
     tryUseAbility(world, f1, 'special');

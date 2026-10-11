@@ -17,7 +17,12 @@ export function updateFighter(world, f, dt) {
     if (onEnd && !f.ko) runSteps(world, f, onEnd, f, f.damageMult);
   }
 
-  if (f.leap && !f.ko) {
+  if (f.leap && f.ko) {
+    f.leap = null;
+    f.onGround = false;
+  }
+
+  if (f.leap) {
     updateLeap(world, f);
     return;
   }
