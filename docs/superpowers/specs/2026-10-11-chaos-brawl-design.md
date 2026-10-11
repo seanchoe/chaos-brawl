@@ -5,7 +5,7 @@ A kid-friendly, browser-based 3D battle game. Two characters fight in a small ar
 ## Goals
 
 - Fun, readable, cartoony 3D fighting that a young kid can pick up in a minute.
-- Two modes: **Vs Computer** and **2 Players** (shared keyboard).
+- Two battle modes: **Vs Computer** and **2 Players** (shared keyboard), plus a **Training Ground** for trying out weapons and abilities.
 - Long-term progression: levels 1–100 per character, weapon evolves every 10 levels.
 - No art/audio asset files required: all models built from Three.js primitives, sounds via Web Audio synthesis.
 
@@ -47,6 +47,7 @@ src/
     abilities.js          effect primitives (see below) — create hitboxes/projectiles/zones
     match.js              rounds, timer, win detection, XP award
     ai.js                 computer opponent (easy/medium/hard)
+    training.js           Training Ground session: dummy behaviors, toggles, damage stats
   render/
     scene.js              renderer, camera, lights, arena
     models.js             build character + weapon meshes from primitives
@@ -204,9 +205,21 @@ Tier *n* unlocks at level `1` (tier 1) and `10 × (n − 1)` for tiers 2–11 (1
 - The AI's character and weapon tier: random character, level ≈ player's level (Easy −10, Medium ±0, Hard +5; clamped 1–100), weapon = highest tier unlocked at that level.
 - Behavior: a small state machine (approach / keep distance / attack / special / retreat) driven by distance and the character's preferred range.
 
-## Screens / flow
+## Training Ground
 
-Title ("CHAOS BRAWL" bouncing logo) → Mode (Vs Computer / 2 Players; Vs Computer then asks difficulty) → Character select (shows level + XP bar per character) → Weapon select (unlocked tiers selectable, locked ones show "Unlocks at Lvl N") → Battle (HUD: energy bars, names, levels, round dots, timer, special cooldown rings, "ROUND 1… FIGHT!") → Results (winner dance, XP, level-ups, unlock celebration) → Rematch / Change characters / Title.
+A practice area for trying weapons and abilities with no pressure. Reached from the Mode screen.
+
+- **Arena:** a grassy practice yard (same size as the battle island) with hay bales and target signs.
+- **Training Bot:** a friendly round robot dummy on springs that wobbles and says "Boing!" when hit. It never attacks. Its energy refills 2 s after it reaches zero (it pops into confetti and bounces back).
+- **Weapons:** pick any character and any weapon tier **you have unlocked** for that character. Locked tiers show "Unlocks at Lvl N" and can't be selected. A weapon switcher panel lets you change character/weapon instantly without leaving the area.
+- **Bot behavior** (selectable): *Stand Still*, *Walk Around* (wanders in circles), *Dodge* (sidesteps projectiles), *Block* (holds a shield every few seconds, to test shield-breaking moves and knockback).
+- **Toggles:** *No Cooldowns* (spam specials), *Infinite Energy* for the player, *Show Hit Areas* (draws translucent shapes for melee arcs, bursts, zones, and projectile hitboxes).
+- **Info panel:** the current weapon's name, basic attack and special descriptions, and live stats — last hit damage, total damage, and damage per second over the last 5 s. A "Reset Stats" button clears them.
+- **Controls:** P1 keys (same as battle). Tab opens/closes the weapon switcher and options panel (game pauses while it's open). Esc returns to the title.
+- **No XP** is earned in the Training Ground, and nothing is saved except the last chosen options.
+
+
+Title ("CHAOS BRAWL" bouncing logo) → Mode (Vs Computer / 2 Players / Training Ground; Vs Computer then asks difficulty; Training Ground goes to character/weapon select, then the practice yard) → Character select (shows level + XP bar per character) → Weapon select (unlocked tiers selectable, locked ones show "Unlocks at Lvl N") → Battle (HUD: energy bars, names, levels, round dots, timer, special cooldown rings, "ROUND 1… FIGHT!") → Results (winner dance, XP, level-ups, unlock celebration) → Rematch / Change characters / Title.
 
 Pause (Esc): Resume / Quit to title. A "How to play" panel on the title screen shows controls.
 
@@ -224,5 +237,6 @@ Synthesized Web Audio effects: swing whoosh, bonk, splat, zap, bubble pop, level
 ## Testing
 
 - **Vitest unit tests** for `logic/`: XP curve and level-ups (including multi-level-ups and the cap at 100), tier unlock levels, save load/fallback/versioning, damage + level scaling, shields, status effect caps and immunity, round/match win logic including timeouts and ties, and validation that all 44 weapon definitions are well-formed (valid primitives, required fields, 11 per character, unlock levels).
+- **Training Ground tests:** only unlocked tiers are selectable, No Cooldowns bypasses cooldowns, bot energy refill, damage stats (total, last hit, 5 s DPS) and reset, no XP awarded.
 - **AI smoke test:** headless simulation of AI vs AI matches that must finish without errors and produce a winner.
 - **Manual play-check** in the browser for feel, visuals, and both modes.
