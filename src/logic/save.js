@@ -5,6 +5,7 @@ import { MAX_LEVEL } from './progression.js';
 export const SAVE_KEY = 'chaos-brawl-save';
 export const SAVE_VERSION = 1;
 export const STARTING_COINS = 50;
+export const BOT_BEHAVIORS = ['still', 'walk', 'dodge', 'block'];
 export const DEFAULT_TRAINING_OPTIONS = {
   botBehavior: 'still',
   noCooldowns: false,
@@ -64,6 +65,18 @@ export function loadSave(storage) {
   }
 }
 
+function asObject(v) {
+  return v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+}
+
+function bool(v, fallback) {
+  return typeof v === 'boolean' ? v : fallback;
+}
+
+function validLastPet(id, ownedPets) {
+  return id === null || ownedPets.includes(id) ? id ?? null : null;
+}
+
 function normalize(data) {
   const fresh = createSave();
   const characters = {};
@@ -73,14 +86,28 @@ function normalize(data) {
     const xp = level < MAX_LEVEL && Number.isFinite(c?.xp) && c.xp >= 0 ? c.xp : 0;
     characters[id] = { level, xp };
   }
+  const ownedPets = Array.isArray(data.ownedPets)
+    ? [...new Set(data.ownedPets.filter((id) => PET_IDS.includes(id)))]
+    : [];
+  const lastPets = asObject(data.lastPets);
+  const settings = asObject(data.settings);
+  const training = asObject(data.training);
   return {
     version: SAVE_VERSION,
     characters,
     coins: Number.isFinite(data.coins) && data.coins >= 0 ? Math.floor(data.coins) : fresh.coins,
-    ownedPets: Array.isArray(data.ownedPets) ? data.ownedPets.filter((id) => PET_IDS.includes(id)) : [],
-    lastPets: { ...fresh.lastPets, ...data.lastPets },
-    settings: { ...fresh.settings, ...data.settings },
-    training: { ...fresh.training, ...data.training },
+    ownedPets,
+    lastPets: {
+      p1: validLastPet(lastPets.p1, ownedPets),
+      p2: validLastPet(lastPets.p2, ownedPets),
+    },
+    settings: { muted: typeof settings.muted === 'boolean' ? settings.muted : fresh.settings.muted },
+    training: {
+      botBehavior: BOT_BEHAVIORS.includes(training.botBehavior) ? training.botBehavior : fresh.training.botBehavior,
+      noCooldowns: bool(training.noCooldowns, fresh.training.noCooldowns),
+      infiniteEnergy: bool(training.infiniteEnergy, fresh.training.infiniteEnergy),
+      showHitAreas: bool(training.showHitAreas, fresh.training.showHitAreas),
+    },
   };
 }
 
