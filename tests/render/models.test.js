@@ -111,3 +111,15 @@ describe('face clearance', () => {
     expect(top(snout)).toBeLessThanOrEqual(bottom(eyeOf(model)) + 1e-6);
   });
 });
+
+describe('status shell size', () => {
+  it('shield and ice cover hats, plume and tail', () => {
+    const s = buildStatusEffects();
+    for (const piece of [s.shield, s.ice]) {
+      const box = new THREE.Box3().setFromObject(piece);
+      expect(box.max.y).toBeGreaterThanOrEqual(2.89);
+      expect(box.min.z).toBeLessThanOrEqual(-1.05);
+      expect(box.max.x).toBeGreaterThanOrEqual(0.69);
+    }
+  });
+});

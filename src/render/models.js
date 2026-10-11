@@ -198,8 +198,8 @@ export function buildStatusEffects() {
   group.name = 'status';
   const see = (color, opacity) => toonMaterial(color, { transparent: true, opacity, depthWrite: false });
 
-  const shield = mesh(new THREE.SphereGeometry(1.1, 20, 14), see(0x74c0fc, 0.3), 0, 0.95, 0);
-  const ice = mesh(new THREE.BoxGeometry(1.2, 2.1, 1.2), see(0xa5d8ff, 0.45), 0, 1.0, 0);
+  const shield = mesh(new THREE.SphereGeometry(1.5, 20, 14), see(0x74c0fc, 0.3), 0, 1.4, 0);
+  const ice = mesh(new THREE.BoxGeometry(1.4, 3.0, 2.2), see(0xa5d8ff, 0.45), 0, 1.5, 0);
   const stars = new THREE.Group();
   stars.position.y = 2.15;
   for (let i = 0; i < 3; i++) {
