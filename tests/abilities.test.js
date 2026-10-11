@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { tryUseAbility, runStep } from '../src/logic/abilities.js';
-import { duel, weaponWith } from './helpers.js';
+import { duel, weaponWith, run } from './helpers.js';
+import { getWeapon } from '../src/data/weapons.js';
 
 const melee = { type: 'melee', damage: 10, range: 2, arc: 90, knockback: 2, popup: 'BONK!' };
 
@@ -127,5 +128,21 @@ describe('primitives', () => {
   it('throws on unknown step types', () => {
     const { world, f1 } = duel();
     expect(() => runStep(world, f1, { type: 'banana' }, f1, 1)).toThrow();
+  });
+});
+
+describe('Magnet Pull (rex tier 4)', () => {
+  it('pulls an opponent at distance 8 and the follow-up melee connects', () => {
+    const { world, f1, f2 } = duel({ a: { weapon: getWeapon('rex', 4), pos: { x: -4, y: 0, z: 0 } }, b: { pos: { x: 4, y: 0, z: 0 } } });
+    expect(tryUseAbility(world, f1, 'special')).toBe(true);
+    expect(f2.knock.x).toBeLessThan(0);
+    run(world, 0.4);
+    expect(f2.energy).toBeLessThan(100);
+  });
+
+  it('does not pull an opponent beyond the reach of the follow-up melee', () => {
+    const { world, f1, f2 } = duel({ a: { weapon: getWeapon('rex', 4), pos: { x: -4.5, y: 0, z: 0 } }, b: { pos: { x: 4.5, y: 0, z: 0 } } });
+    tryUseAbility(world, f1, 'special');
+    expect(f2.knock.x).toBe(0);
   });
 });
