@@ -155,7 +155,7 @@ const WEAPON_LINES = {
       { type: 'projectile', count: 3, spread: 25, damage: 7, speed: 20, size: 0.22, life: 0.8, style: 'dart', popup: 'POW!' },
     ])),
     weapon('Magnet Gun', special('Magnet Pull', 'Pull them close and bonk!', 7, [
-      { type: 'pull', range: 10, strength: 28 },
+      { type: 'pull', range: 8, strength: 28 },
       { type: 'melee', delay: 0.35, damage: 10, range: 2.2, arc: 140, knockback: 3, popup: 'CLANG!' },
     ])),
     weapon('Laser Tag Zapper', special('Laser Beam', 'A super fast laser that goes through.', 5, [
