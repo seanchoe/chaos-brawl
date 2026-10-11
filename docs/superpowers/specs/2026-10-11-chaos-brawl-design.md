@@ -5,7 +5,7 @@ A kid-friendly, browser-based 3D battle game. Two characters fight in a small ar
 ## Goals
 
 - Fun, readable, cartoony 3D fighting that a young kid can pick up in a minute.
-- Two battle modes: **Vs Computer** and **2 Players** (shared keyboard), plus a **Training Ground** for trying out weapons and abilities.
+- Two battle modes: **Vs Computer** and **2 Players** (shared keyboard), plus a **Training Ground** for trying out weapons and abilities, and a **Pet Shop** where you spend coins on pets that help you fight.
 - Long-term progression: levels 1–100 per character, weapon evolves every 10 levels.
 - No art/audio asset files required: all models built from Three.js primitives, sounds via Web Audio synthesis.
 
@@ -39,6 +39,7 @@ src/
   data/
     characters.js         4 characters: name, colors, base stats, weapon line
     weapons.js            44 weapon definitions (data only)
+    pets.js               8 pet definitions (data only)
   logic/
     progression.js        XP curve, level-ups, tier unlocks (pure)
     save.js               localStorage load/save with versioning + fallback
@@ -48,6 +49,8 @@ src/
     match.js              rounds, timer, win detection, XP award
     ai.js                 computer opponent (easy/medium/hard)
     training.js           Training Ground session: dummy behaviors, toggles, damage stats
+    pets.js               pet companion state + helper ability on a timer
+    shop.js               buy/equip pets with coins (pure)
   render/
     scene.js              renderer, camera, lights, arena
     models.js             build character + weapon meshes from primitives
@@ -194,10 +197,35 @@ Tier *n* unlocks at level `1` (tier 1) and `10 × (n − 1)` for tiers 2–11 (1
 - Each character has its own level (1–100) and XP, saved in `localStorage`. Progress is per device, shared by whoever plays.
 - XP to go from level L to L+1: `40 + 2 × L`. About 3 wins reach level 10; about 90 wins reach level 100.
 - XP per match: win **150**, loss **75**, plus **+5 per round won**. In 2-player mode both characters earn XP. In Vs Computer, only Player 1's character earns XP.
+- **Coins** (for the Pet Shop) per match: win **30**, loss **15**, plus **+5 per round won**. In 2-player mode the coins from both players go into the one shared wallet. Coins are shared across all characters.
 - **Level scaling:** damage multiplier `1 + 0.005 × (level − 1)` (up to +49.5% at level 100); move speed `+0.1% per level`. Cooldowns do not change with level, so higher levels feel stronger without letting anyone spam specials.
 - **Weapon select:** before a match, each player picks any unlocked weapon tier for their character (defaults to the highest unlocked).
 - **Results screen:** shows XP gained, level-up animations, and a big "NEW WEAPON UNLOCKED!" celebration showing the new weapon and its special.
 - **Save robustness:** save data has a `version` field. Corrupt or missing data falls back to a fresh save without crashing. The settings menu has a "Reset progress" option with a confirm step.
+
+## Pet Shop
+
+Reached from the title screen. Spend coins on pets that follow you into battle and help.
+
+- **Wallet:** one shared coin wallet saved in `localStorage`, shown at the top of the shop and the title screen. New saves start with **50 coins**, so a kid can buy a first pet right away.
+- **Shop screen:** a grid of pet cards. Each card has a rotating 3D preview, name, price, and a one-line description of its helper move. Buttons: **Buy** (if not owned and affordable), **Not enough coins** (disabled, shows how many more are needed), or **Owned ✓**. A pet is bought once and kept forever.
+- **Equipping:** on the Weapon Select screen each player also picks a pet from the pets they own (or "No pet"). The last choice is remembered. Pets work with every character.
+- **In battle:** the pet floats/hops beside its owner and uses its helper move automatically on a timer (no extra buttons). Pets **cannot be hit** and never get hurt — they're just helpers. Pet damage does not scale with level, so pets help without overpowering. Status caps (freeze/stun limits) still apply.
+- **Computer opponent:** gets a random pet if Player 1 has a pet equipped (none otherwise), so it stays fair.
+- **Training Ground:** you can bring your equipped pet; *No Cooldowns* also applies to the pet's helper move. Pet damage counts in the stats panel.
+
+| Pet | Price | Helper move (every N s) |
+|-----|-------|-------------|
+| **Biscuit** the Puppy | 50 | **Bonk Bark** — runs up and bonks a nearby opponent (4) — every 4 s |
+| **Whiskers** the Kitty | 100 | **Pounce** — dashes at opponent (6) — every 6 s |
+| **Hops** the Bunny | 150 | **Carrot Snack** — drops a carrot that heals owner 8 — every 10 s |
+| **Shelly** the Turtle | 200 | **Shell Guard** — owner blocks the next hit fully — every 12 s |
+| **Hoot** the Owl | 250 | **Feather Shot** — `projectile` (5) — every 5 s |
+| **Pebble** the Penguin | 350 | **Ice Slide** — slides into opponent (4) + `freeze` 0.8 s — every 12 s |
+| **Ember** the Baby Dragon | 450 | **Puff Ball** — fireball `projectile` (8) — every 6 s |
+| **Twinkle** the Unicorn | 600 | **Rainbow Sparkle** — heals owner 10 + `burst` (8) — every 12 s |
+
+Pet helper moves reuse the same ability primitives as weapons.
 
 ## Computer opponent (AI)
 
@@ -216,10 +244,10 @@ A practice area for trying weapons and abilities with no pressure. Reached from 
 - **Toggles:** *No Cooldowns* (spam specials), *Infinite Energy* for the player, *Show Hit Areas* (draws translucent shapes for melee arcs, bursts, zones, and projectile hitboxes).
 - **Info panel:** the current weapon's name, basic attack and special descriptions, and live stats — last hit damage, total damage, and damage per second over the last 5 s. A "Reset Stats" button clears them.
 - **Controls:** P1 keys (same as battle). Tab opens/closes the weapon switcher and options panel (game pauses while it's open). Esc returns to the title.
-- **No XP** is earned in the Training Ground, and nothing is saved except the last chosen options.
+- **No XP or coins** are earned in the Training Ground, and nothing is saved except the last chosen options.
 
 
-Title ("CHAOS BRAWL" bouncing logo) → Mode (Vs Computer / 2 Players / Training Ground; Vs Computer then asks difficulty; Training Ground goes to character/weapon select, then the practice yard) → Character select (shows level + XP bar per character) → Weapon select (unlocked tiers selectable, locked ones show "Unlocks at Lvl N") → Battle (HUD: energy bars, names, levels, round dots, timer, special cooldown rings, "ROUND 1… FIGHT!") → Results (winner dance, XP, level-ups, unlock celebration) → Rematch / Change characters / Title.
+Title ("CHAOS BRAWL" bouncing logo, coin count, buttons: Play / Pet Shop / How to Play / Settings) → Mode (Vs Computer / 2 Players / Training Ground; Vs Computer then asks difficulty; Training Ground goes to character/weapon select, then the practice yard) → Character select (shows level + XP bar per character) → Weapon select (unlocked tiers selectable, locked ones show "Unlocks at Lvl N"; pet picker from owned pets) → Battle (HUD: energy bars, names, levels, round dots, timer, special cooldown rings, "ROUND 1… FIGHT!") → Results (winner dance, XP, coins earned, level-ups, unlock celebration) → Rematch / Change characters / Title.
 
 Pause (Esc): Resume / Quit to title. A "How to play" panel on the title screen shows controls.
 
@@ -238,5 +266,6 @@ Synthesized Web Audio effects: swing whoosh, bonk, splat, zap, bubble pop, level
 
 - **Vitest unit tests** for `logic/`: XP curve and level-ups (including multi-level-ups and the cap at 100), tier unlock levels, save load/fallback/versioning, damage + level scaling, shields, status effect caps and immunity, round/match win logic including timeouts and ties, and validation that all 44 weapon definitions are well-formed (valid primitives, required fields, 11 per character, unlock levels).
 - **Training Ground tests:** only unlocked tiers are selectable, No Cooldowns bypasses cooldowns, bot energy refill, damage stats (total, last hit, 5 s DPS) and reset, no XP awarded.
+- **Pet Shop tests:** buying deducts coins and adds the pet, can't buy with too few coins or buy twice, coin awards per match, starting coins, pet helper timers fire on schedule, Shell Guard blocks exactly one hit, pets can't be targeted, all 8 pet definitions well-formed.
 - **AI smoke test:** headless simulation of AI vs AI matches that must finish without errors and produce a winner.
 - **Manual play-check** in the browser for feel, visuals, and both modes.
