@@ -78,6 +78,22 @@ describe('battle view', () => {
     expect(status.ice.visible).toBe(false);
   });
 
+  it('hides every status piece on a knocked-out fighter', () => {
+    const { world, view } = setup();
+    const f = world.fighters[0];
+    f.shield = { until: world.time + 5, reduction: 1, onEnd: null };
+    f.status.freezeUntil = world.time + 5;
+    f.status.stunUntil = world.time + 5;
+    f.status.slowUntil = world.time + 5;
+    f.guardHits = 2;
+    view.sync(world, 0.016);
+    const status = view.statusFor('p1');
+    for (const k of ['shield', 'ice', 'stars', 'slow', 'guard']) expect(status[k].visible).toBe(true);
+    f.ko = true;
+    view.sync(world, 0.016);
+    for (const k of ['shield', 'ice', 'stars', 'slow', 'guard']) expect(status[k].visible).toBe(false);
+  });
+
   it('rebuilds the model when the weapon changes', () => {
     const { world, view } = setup();
     setLoadout(world.fighters[0], { character: getCharacter('sparkle'), level: 20, weapon: getWeapon('sparkle', 3) });

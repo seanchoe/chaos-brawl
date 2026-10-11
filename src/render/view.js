@@ -82,6 +82,13 @@ export function createBattleView(scene, { tintP2 = false } = {}) {
     if (s.stars.visible) s.stars.rotation.y += dt * 6;
     s.slow.visible = now < f.status.slowUntil;
     s.guard.visible = f.guardHits > 0;
+    if (f.ko) {
+      s.shield.visible = false;
+      s.ice.visible = false;
+      s.stars.visible = false;
+      s.slow.visible = false;
+      s.guard.visible = false;
+    }
   }
 
   function syncProjectiles(world, dt) {
