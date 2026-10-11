@@ -21,6 +21,11 @@ describe('loadouts and config', () => {
     expect(cfg.difficulty).toBe('medium');
   });
 
+  it('defaults to medium difficulty in Vs Computer', () => {
+    const cfg = buildMatchConfig({ mode: 'cpu', p1: { characterId: 'bubbles', tier: 1 } }, () => 0);
+    expect(cfg.difficulty).toBe('medium');
+  });
+
   it('uses both choices in 2 Players', () => {
     const cfg = buildMatchConfig({ mode: '2p', p1: { characterId: 'bubbles', tier: 1 }, p2: { characterId: 'rex', tier: 2 } });
     expect(cfg.p2).toEqual(quickLoadout('rex', 2));

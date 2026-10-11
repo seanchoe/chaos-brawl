@@ -12,11 +12,12 @@ export function quickLoadout(characterId, tier) {
 
 // choice: { mode, difficulty, p1: { characterId, tier }, p2?: { characterId, tier } }
 export function buildMatchConfig(choice, rng = Math.random) {
+  const difficulty = choice.difficulty ?? 'medium';
   const p1 = quickLoadout(choice.p1.characterId, choice.p1.tier);
   const p2 = choice.mode === 'cpu'
-    ? pickAIOpponent({ playerLevel: p1.level, difficulty: choice.difficulty, playerHasPet: false, rng })
+    ? pickAIOpponent({ playerLevel: p1.level, difficulty, playerHasPet: false, rng })
     : quickLoadout(choice.p2.characterId, choice.p2.tier);
-  return { mode: choice.mode, difficulty: choice.difficulty, p1, p2 };
+  return { mode: choice.mode, difficulty, p1, p2 };
 }
 
 export function createBattleController(config, rng = Math.random) {
