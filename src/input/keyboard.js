@@ -27,6 +27,7 @@ export function createKeyboard(target = globalThis.window) {
   const pressed = new Set();
 
   const onDown = (e) => {
+    if (e.target?.closest?.('input, select, textarea, button') && e.code !== 'Escape') return;
     if (GAME_KEYS.has(e.code)) e.preventDefault();
     if (!e.repeat) pressed.add(e.code);
     down.add(e.code);

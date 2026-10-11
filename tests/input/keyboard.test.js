@@ -63,6 +63,49 @@ describe('createKeyboard', () => {
   });
 });
 
+describe('createKeyboard with form controls', () => {
+  const fire = (el, code, type = 'keydown', extra = {}) => {
+    const e = new KeyboardEvent(type, { code, bubbles: true, cancelable: true, ...extra });
+    el.dispatchEvent(e);
+    return e;
+  };
+
+  it('leaves keys alone when a button, select, input or textarea is focused', () => {
+    for (const tag of ['button', 'select', 'input', 'textarea']) {
+      const el = document.createElement(tag);
+      document.body.appendChild(el);
+      const kb = createKeyboard(window);
+      const e = fire(el, 'Enter');
+      expect(e.defaultPrevented).toBe(false);
+      expect(kb.input('p2').jump).toBe(false);
+      expect(kb.consumePress('Enter')).toBe(false);
+      const a = fire(el, 'ArrowUp');
+      expect(a.defaultPrevented).toBe(false);
+      expect(kb.input('p2').moveZ).toBe(0);
+      kb.dispose();
+      el.remove();
+    }
+  });
+
+  it('still records Escape from a focused control', () => {
+    const el = document.createElement('button');
+    document.body.appendChild(el);
+    const kb = createKeyboard(window);
+    fire(el, 'Escape');
+    expect(kb.consumePress('Escape')).toBe(true);
+    kb.dispose();
+    el.remove();
+  });
+
+  it('still handles game keys on non-form elements', () => {
+    const kb = createKeyboard(window);
+    const e = fire(document.body, 'Enter');
+    expect(e.defaultPrevented).toBe(true);
+    expect(kb.input('p2').jump).toBe(true);
+    kb.dispose();
+  });
+});
+
 describe('keyLabel', () => {
   it('gives short friendly labels', () => {
     expect(keyLabel('KeyF')).toBe('F');
