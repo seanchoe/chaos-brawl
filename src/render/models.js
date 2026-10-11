@@ -238,6 +238,7 @@ export function buildProjectileMesh(style, size) {
   const material = toonMaterial(v.color, {
     transparent: v.opacity !== undefined,
     opacity: v.opacity ?? 1,
+    depthWrite: v.opacity === undefined || v.opacity >= 1,
     emissive: v.glow ? v.color : 0x000000,
     emissiveIntensity: v.glow ? 0.6 : 0,
   });

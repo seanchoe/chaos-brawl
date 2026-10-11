@@ -86,3 +86,10 @@ describe('status shadows', () => {
     }
   });
 });
+
+describe('transparent projectiles', () => {
+  it('do not write depth', () => {
+    expect(buildProjectileMesh('bubble', 0.3).material.depthWrite).toBe(false);
+    expect(buildProjectileMesh('ball', 0.3).material.depthWrite).toBe(true);
+  });
+});
