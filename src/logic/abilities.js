@@ -65,7 +65,7 @@ export function runStep(world, caster, step, source, scale, point = null) {
       world.events.push({ type: 'guard', fighterId: caster.id });
       return;
     case 'strike':
-      if (opp && !opp.ko && dist2D(source.pos, opp.pos) <= step.range) {
+      if (opp && !opp.ko && dist2D(source.pos, opp.pos) <= step.range && Math.abs(opp.pos.y - source.pos.y) < 1.5) {
         if ('strikeAnim' in source) source.strikeAnim = { to: { ...opp.pos }, until: world.time + 0.3 };
         hitTarget(world, caster, opp, step, source.pos, scale);
       }
