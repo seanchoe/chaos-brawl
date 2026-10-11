@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import * as THREE from 'three';
 import { toScreen, createParticles, createPopups, createEffects, POPUP_LIFE } from '../../src/render/effects.js';
 
@@ -31,6 +31,31 @@ describe('particles', () => {
     p.update(0.6);
     expect(p.count).toBe(0);
     expect(scene.children).toHaveLength(0);
+  });
+});
+
+describe('particles dispose', () => {
+  it('clears particles and disposes the shared geometry', () => {
+    const scene = new THREE.Scene();
+    const p = createParticles(scene);
+    p.burst({ x: 0, y: 1, z: 0 }, { count: 3, colors: [0xffffff] });
+    const spy = vi.spyOn(THREE.BoxGeometry.prototype, 'dispose');
+    p.clear();
+    expect(spy).not.toHaveBeenCalled();
+    p.dispose();
+    expect(p.count).toBe(0);
+    expect(scene.children).toHaveLength(0);
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
+  });
+
+  it('createEffects.dispose disposes the particle geometry', () => {
+    const scene = new THREE.Scene();
+    const effects = createEffects({ scene, container: document.createElement('div') });
+    const spy = vi.spyOn(THREE.BoxGeometry.prototype, 'dispose');
+    effects.dispose();
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
   });
 });
 

@@ -66,6 +66,11 @@ export function createParticles(scene) {
       }
       list = [];
     },
+    // Final teardown: also frees the shared geometry, so don't burst afterwards.
+    dispose() {
+      this.clear();
+      geometry.dispose();
+    },
   };
 }
 
@@ -157,7 +162,7 @@ export function createEffects({ scene, container }) {
       popups.update(dt, camera, width, height);
     },
     dispose() {
-      particles.clear();
+      particles.dispose();
       popups.dispose();
     },
   };
