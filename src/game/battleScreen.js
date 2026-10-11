@@ -10,6 +10,8 @@ import { createBattleController } from './battleController.js';
 import { drainEvents } from '../logic/world.js';
 import { DT } from '../logic/constants.js';
 
+const RESULTS_DELAY = 1.2;
+
 function el(tag, className, parent, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -36,6 +38,7 @@ export function mountBattle({ root, config, onExit }) {
   const start = computeCamera(controller.match.world.fighters[0].pos, controller.match.world.fighters[1].pos);
   const cam = { pos: { ...start.position }, target: { ...start.target } };
   let resultShown = false;
+  let overSeconds = 0; // real time since the match ended, so the finish can land
 
   // Drop stale key presses and focus (e.g. from the menu) so they can't pause or click buttons.
   function resetInputFocus() {
@@ -86,6 +89,7 @@ export function mountBattle({ root, config, onExit }) {
     controller = createBattleController(config);
     view = createBattleView(gfx.scene, { tintP2 });
     resultShown = false;
+    overSeconds = 0;
     stage.classList.remove('results');
     loop.resume();
     hideOverlay();
@@ -126,7 +130,10 @@ export function mountBattle({ root, config, onExit }) {
     hud.update(hudState(controller.match));
     gfx.render();
 
-    if (controller.isOver && !resultShown) showResults();
+    if (controller.isOver && !resultShown) {
+      if (!paused) overSeconds += frameSeconds;
+      if (overSeconds >= RESULTS_DELAY) showResults();
+    }
   }
 
   const loop = createLoop({
