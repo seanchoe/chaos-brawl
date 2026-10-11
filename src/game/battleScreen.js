@@ -84,6 +84,7 @@ export function mountBattle({ root, config, onExit }) {
     controller = createBattleController(config);
     view = createBattleView(gfx.scene, { tintP2 });
     resultShown = false;
+    loop.resume();
     hideOverlay();
     resetInputFocus();
   }
