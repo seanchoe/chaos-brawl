@@ -1,0 +1,13 @@
+export const DT = 1 / 60;
+export const ARENA_RADIUS = 12;
+export const FIGHTER_RADIUS = 0.6;
+export const FIGHTER_CENTER_Y = 0.9;
+export const MAX_ENERGY = 100;
+export const ROUND_TIME = 60;
+export const GRAVITY = 30;
+export const JUMP_SPEED = 11;
+export const BASE_MOVE_SPEED = 6;
+export const KNOCK_DECAY = 4;
+export const MAX_CC_DURATION = 1.2;
+export const CC_IMMUNITY = 2;
+export const MAX_SLOW = 0.5;
