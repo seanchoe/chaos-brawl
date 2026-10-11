@@ -44,6 +44,7 @@ export function createRenderer(container) {
     },
     dispose() {
       window.removeEventListener('resize', resize);
+      renderer.forceContextLoss();
       renderer.dispose();
       renderer.domElement.remove();
     },
