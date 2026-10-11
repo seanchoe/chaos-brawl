@@ -1,5 +1,7 @@
 # Chaos Brawl — Design Spec
 
+> **Addendum:** `2026-10-11-characters-and-unlocks-design.md` adds 4 characters (8 total, 88 weapons) and coin-based unlocking of weapons and characters. It overrides this document where they differ.
+
 A kid-friendly, browser-based 3D battle game. Two characters fight in a small arena using weapons and special abilities. Each character's weapon evolves through 11 forms as the character levels from 1 to 100, with progress saved between matches.
 
 ## Goals
