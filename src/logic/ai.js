@@ -6,9 +6,9 @@ import { dist2D, dirTo } from './vec.js';
 import { opponentOf } from './world.js';
 
 export const AI_SETTINGS = {
-  easy: { reaction: 0.8, specialChance: 0.15, dodgeChance: 0, blocks: false, levelOffset: -10 },
-  medium: { reaction: 0.45, specialChance: 0.6, dodgeChance: 0.1, blocks: false, levelOffset: 0 },
-  hard: { reaction: 0.25, specialChance: 0.85, dodgeChance: 0.5, blocks: true, levelOffset: 5 },
+  easy: { reaction: 0.8, specialChance: 0.15, dodgeChance: 0, blocks: false, blockChance: 0, levelOffset: -10 },
+  medium: { reaction: 0.45, specialChance: 0.6, dodgeChance: 0.1, blocks: false, blockChance: 0.3, levelOffset: 0 },
+  hard: { reaction: 0.25, specialChance: 0.85, dodgeChance: 0.5, blocks: true, blockChance: 1, levelOffset: 5 },
 };
 
 const TARGETED_REACH = 15;
@@ -104,7 +104,7 @@ export function updateAI(ai, world, me) {
       const hasHeal = special.steps.some((s) => s.type === 'heal');
       const hasShield = special.steps.some((s) => s.type === 'shield');
       if (hasHeal && me.energy < 60) plan.special = true;
-      else if (hasShield && d < 4 && (settings.blocks || rng() < 0.3)) plan.special = true;
+      else if (hasShield && d < 4 && (settings.blocks || rng() < settings.blockChance)) plan.special = true;
       else if (!hasHeal && !hasShield && d < 2.5) plan.special = true;
     } else if (d <= abilityReach(special) + 0.5) {
       plan.special = true;

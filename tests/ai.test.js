@@ -92,6 +92,17 @@ describe('updateAI', () => {
     expect(f1.input.special).toBe(false);
   });
 
+  it('easy never blocks with shield-only specials', () => {
+    for (const tier of [3, 8]) {
+      const easy = duel({ a: { character: getCharacter('sparkle'), weapon: getWeapon('sparkle', tier), pos: { x: 0, y: 0, z: 0 } }, b: { pos: { x: 3, y: 0, z: 0 } } });
+      updateAI(createAI('easy', always(0)), easy.world, easy.f1);
+      expect(easy.f1.input.special).toBe(false);
+    }
+    const medium = duel({ a: { character: getCharacter('sparkle'), weapon: getWeapon('sparkle', 3), pos: { x: 0, y: 0, z: 0 } }, b: { pos: { x: 3, y: 0, z: 0 } } });
+    updateAI(createAI('medium', always(0)), medium.world, medium.f1);
+    expect(medium.f1.input.special).toBe(true);
+  });
+
   it('only re-thinks after its reaction time, and does not hold special/jump', () => {
     const { world, f1 } = setup('rex', 3);
     const ai = createAI('hard', always(0.5));
