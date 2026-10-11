@@ -81,6 +81,7 @@ export function mountBattle({ root, config, onExit }) {
 
   function rematch() {
     view.clear();
+    effects.clear();
     controller = createBattleController(config);
     view = createBattleView(gfx.scene, { tintP2 });
     resultShown = false;
