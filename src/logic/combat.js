@@ -16,8 +16,9 @@ export function applyDamage(world, target, amount, attacker, popup) {
     return 0;
   }
   const damage = amount * target.character.defense * (1 - reduction);
+  const dealt = target.infiniteEnergy ? damage : Math.min(damage, target.energy);
   if (!target.infiniteEnergy) target.energy = Math.max(0, target.energy - damage);
-  world.events.push({ type: 'hit', ...base, damage, popup });
+  world.events.push({ type: 'hit', ...base, damage, dealt, popup });
   if (target.energy <= 0) {
     target.ko = true;
     world.events.push({ type: 'ko', targetId: target.id });

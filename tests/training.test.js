@@ -4,6 +4,8 @@ import {
 } from '../src/logic/training.js';
 import { DEFAULT_TRAINING_OPTIONS } from '../src/logic/save.js';
 import { DT } from '../src/logic/constants.js';
+import { applyDamage } from '../src/logic/combat.js';
+import { schedule } from '../src/logic/world.js';
 
 function runTraining(session, seconds) {
   const steps = Math.round(seconds / DT);
@@ -36,6 +38,18 @@ describe('training', () => {
     expect(damagePerSecond(s)).toBeCloseTo(s.stats.total / STATS_WINDOW);
     resetStats(s);
     expect(s.stats).toEqual({ last: 0, total: 0, recent: [] });
+  });
+
+  it('does not count overkill damage in the stats', () => {
+    const s = sparkle();
+    const [player, bot] = s.world.fighters;
+    bot.energy = 5;
+    schedule(s.world, 0, () => applyDamage(s.world, bot, 10, player));
+    stepTraining(s, DT);
+    expect(bot.ko).toBe(true);
+    expect(s.stats.last).toBe(5);
+    expect(s.stats.total).toBe(5);
+    expect(s.stats.recent.map((h) => h.damage)).toEqual([5]);
   });
 
   it('counts pet damage in the stats', () => {
