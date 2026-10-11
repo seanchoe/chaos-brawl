@@ -4,6 +4,7 @@ import { tryUseAbility } from './abilities.js';
 import { updateFighter } from './movement.js';
 import { updateProjectiles, updateZones } from './projectiles.js';
 import { runTimers } from './world.js';
+import { updatePet } from './pets.js';
 
 export function stepWorld(world, dt) {
   world.time += dt;
@@ -14,6 +15,7 @@ export function stepWorld(world, dt) {
     if (f.input.attack) tryUseAbility(world, f, 'basic');
     if (f.input.special) tryUseAbility(world, f, 'special');
   }
+  for (const pet of world.pets) updatePet(world, pet, dt);
   updateProjectiles(world, dt);
   updateZones(world);
 }
