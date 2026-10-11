@@ -46,6 +46,11 @@ export function runStep(world, caster, step, source, scale, point = null) {
     case 'dash': return startDash(world, caster, opp, step);
     case 'burst': return doBurst(world, caster, opp, step, source, scale, point);
     case 'shield':
+      if (caster.shield?.onEnd) {
+        const { onEnd } = caster.shield;
+        caster.shield = null;
+        runSteps(world, caster, onEnd, caster, caster.damageMult);
+      }
       caster.shield = { until: world.time + step.duration, reduction: step.reduction, onEnd: step.onEnd ?? null };
       world.events.push({ type: 'shield', fighterId: caster.id, duration: step.duration, reduction: step.reduction });
       return;
