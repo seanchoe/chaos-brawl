@@ -40,6 +40,11 @@ export function buildFighterModel(character, weapon, { tint = false } = {}) {
 
   addAccessory(root, character.id, { bodyMat, accentMat });
 
+  const flashMaterials = [];
+  root.traverse((o) => {
+    if (o.material && !flashMaterials.includes(o.material)) flashMaterials.push(o.material);
+  });
+
   const weaponMount = new THREE.Group();
   weaponMount.name = 'weaponMount';
   weaponMount.position.set(0.55, 0.9, 0.15);
@@ -50,7 +55,7 @@ export function buildFighterModel(character, weapon, { tint = false } = {}) {
   effects.name = 'effects';
   root.add(effects);
 
-  root.userData.parts = { body, head, weaponMount, effects };
+  root.userData.parts = { body, head, weaponMount, effects, flashMaterials };
   return root;
 }
 

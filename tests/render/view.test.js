@@ -107,4 +107,22 @@ describe('battle view', () => {
     view.clear();
     expect(scene.children.length).toBe(0);
   });
+
+  it('flashes every fighter material on hit and restores them', () => {
+    const { world, view } = setup();
+    const parts = view.fighterModel('p2').userData.parts;
+    expect(parts.flashMaterials).toContain(parts.body.material);
+    expect(parts.flashMaterials.length).toBeGreaterThan(1);
+    view.handleEvents([{ type: 'hit', targetId: 'p2', attackerId: 'p1', damage: 5, popup: 'BONK!', pos: { x: 5, y: 0, z: 0 } }]);
+    view.sync(world, 0.016);
+    for (const m of parts.flashMaterials) {
+      expect(m.emissive.getHex()).toBe(0xffffff);
+      expect(m.emissiveIntensity).toBeCloseTo(0.6);
+    }
+    view.sync(world, 0.5);
+    for (const m of parts.flashMaterials) {
+      expect(m.emissive.getHex()).toBe(0x000000);
+      expect(m.emissiveIntensity).toBe(0);
+    }
+  });
 });

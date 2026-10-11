@@ -60,7 +60,11 @@ export function createBattleView(scene, { tintP2 = false } = {}) {
     }
 
     e.flash = Math.max(0, e.flash - dt);
-    parts.body.material.emissive.setHex(e.flash > 0 ? 0xffffff : 0x000000);
+    const flashing = e.flash > 0;
+    for (const m of parts.flashMaterials) {
+      m.emissive.setHex(flashing ? 0xffffff : 0x000000);
+      m.emissiveIntensity = flashing ? 0.6 : 0;
+    }
 
     e.swing = Math.max(0, e.swing - dt);
     parts.weaponMount.rotation.x = e.swing > 0 ? -Math.sin((1 - e.swing / SWING_TIME) * Math.PI) * 1.6 : 0;
