@@ -47,6 +47,7 @@ export function createTrainingSession({ characterId, level, tier, petId = null, 
     nextBlockAt: 2,
     walkAngle: 0,
   };
+  if (!BOT_BEHAVIORS.includes(session.options.botBehavior)) session.options.botBehavior = DEFAULT_TRAINING_OPTIONS.botBehavior;
   applyOptions(session);
   return session;
 }
@@ -58,6 +59,7 @@ function applyOptions(session) {
 }
 
 export function setOption(session, key, value) {
+  if (key === 'botBehavior' && !BOT_BEHAVIORS.includes(value)) return;
   session.options[key] = value;
   applyOptions(session);
 }
