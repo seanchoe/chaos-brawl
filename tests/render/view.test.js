@@ -132,4 +132,13 @@ describe('battle view', () => {
     view.sync(world, 0.11);
     expect(view.fighterModel('p1').userData.parts.weaponMount.rotation.x).toBeGreaterThan(0);
   });
+
+  it('keeps rainbow projectile glow in step with its color', () => {
+    const { world, view, scene } = setup();
+    const before = scene.children.length;
+    runStep(world, world.fighters[0], { type: 'projectile', damage: 1, speed: 10, size: 0.3, life: 1, style: 'rainbow' }, world.fighters[0], 1);
+    view.sync(world, 0.3);
+    const m = scene.children[before];
+    expect(m.material.emissive.getHex()).toBe(m.material.color.getHex());
+  });
 });

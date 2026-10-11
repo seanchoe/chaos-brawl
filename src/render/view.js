@@ -98,7 +98,10 @@ export function createBattleView(scene, { tintP2 = false } = {}) {
       const v = m.userData.visual;
       if (v.spin) m.rotation.y += dt * 12;
       else m.rotation.y = facingToRotationY(Math.atan2(p.vel.z, p.vel.x));
-      if (v.rainbow) m.material.color.setHSL((clock * 1.5) % 1, 0.8, 0.65);
+      if (v.rainbow) {
+        m.material.color.setHSL((clock * 1.5) % 1, 0.8, 0.65);
+        if (v.glow) m.material.emissive.copy(m.material.color);
+      }
     }
     for (const [id, m] of projectiles) {
       if (!seen.has(id)) {
