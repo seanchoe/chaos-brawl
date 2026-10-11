@@ -47,6 +47,18 @@ describe('combat', () => {
     expect(world.events.at(-1)).toMatchObject({ type: 'hit', targetId: 'p2', attackerId: 'p1', damage: 10, popup: 'BONK!' });
   });
 
+  it('reports the energy actually removed as dealt in the hit event', () => {
+    const { world, f1, f2 } = duel();
+    f2.energy = 4;
+    applyDamage(world, f2, 10, f1);
+    expect(world.events.find((e) => e.type === 'hit')).toMatchObject({ damage: 10, dealt: 4 });
+    const inf = duel();
+    inf.f2.infiniteEnergy = true;
+    inf.f2.energy = 4;
+    applyDamage(inf.world, inf.f2, 10, inf.f1);
+    expect(inf.world.events.find((e) => e.type === 'hit')).toMatchObject({ damage: 10, dealt: 10 });
+  });
+
   it('applies character defense', () => {
     const { world, f1, f2 } = duel({ b: { character: getCharacter('pancake') } });
     expect(applyDamage(world, f2, 10, f1)).toBeCloseTo(9);

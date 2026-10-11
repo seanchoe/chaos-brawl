@@ -85,9 +85,9 @@ export function stepTraining(session, dt) {
   for (let i = firstNew; i < world.events.length; i++) {
     const e = world.events[i];
     if (e.type === 'hit' && e.attackerId === 'p1') {
-      stats.last = e.damage;
-      stats.total += e.damage;
-      stats.recent.push({ time: world.time, damage: e.damage });
+      stats.last = e.dealt;
+      stats.total += e.dealt;
+      stats.recent.push({ time: world.time, damage: e.dealt });
     }
   }
   stats.recent = stats.recent.filter((h) => h.time > world.time - STATS_WINDOW);
