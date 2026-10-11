@@ -83,4 +83,29 @@ describe('createLoop', () => {
     expect(env.callbacks).toHaveLength(0);
     expect(loop.running).toBe(false);
   });
+
+  it('cancels the pending frame on stop', () => {
+    const env = fakeEnv();
+    const cancelled = [];
+    const loop = createLoop({ dt: DT, step: () => {}, render: () => {}, raf: env.raf, cancel: (id) => cancelled.push(id), now: () => 0, doc: env.doc });
+    loop.start();
+    loop.stop();
+    expect(cancelled).toEqual([1]);
+  });
+
+  it('ignores a stale frame from before a restart and keeps a single chain', () => {
+    const env = fakeEnv();
+    let steps = 0;
+    const loop = createLoop({ dt: DT, step: () => { steps += 1; }, render: () => {}, raf: env.raf, cancel: () => {}, now: () => 0, doc: env.doc });
+    loop.start();
+    const stale = env.callbacks.shift();
+    loop.stop();
+    loop.start();
+    stale(1000);
+    expect(steps).toBe(0);
+    expect(env.callbacks).toHaveLength(1);
+    env.callbacks.shift()(1000 / 30);
+    expect(steps).toBe(2);
+    expect(env.callbacks).toHaveLength(1);
+  });
 });
