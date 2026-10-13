@@ -1,6 +1,7 @@
 import {
   buildFighterModel, buildStatusEffects, buildProjectileMesh, buildZoneMesh, buildWarningMesh, disposeObject,
 } from './models.js';
+import { buildPetModel } from './petModels.js';
 import { facingToRotationY } from './math.js';
 
 export const KO_SHRINK_TIME = 0.6;
@@ -8,11 +9,15 @@ const KO_SPIN = 14;
 const SWING_TIME = 0.22;
 const BOUNCE_TIME = 0.35;
 const FLASH_TIME = 0.12;
+const PET_HOP_SPEED = 7;
+const PET_HOP_HEIGHT = 0.15;
+const PET_STRIKE_TIME = 0.3;
 
 export function createBattleView(scene, { tintP2 = false } = {}) {
   const fighters = new Map();
   const projectiles = new Map();
   const zones = new Map();
+  const pets = new Map();
   let warnings = [];
   let clock = 0;
 
@@ -140,6 +145,40 @@ export function createBattleView(scene, { tintP2 = false } = {}) {
     }
   }
 
+  // Pets hop beside their owner and lunge at the opponent when they strike.
+  function syncPets(world) {
+    const seen = new Set();
+    for (const pet of world.pets) {
+      seen.add(pet.ownerId);
+      let e = pets.get(pet.ownerId);
+      if (e && e.petId !== pet.def.id) {
+        remove(e.model);
+        e = null;
+      }
+      if (!e) {
+        e = { model: buildPetModel(pet.def), petId: pet.def.id };
+        scene.add(e.model);
+        pets.set(pet.ownerId, e);
+      }
+      let { x, z } = pet.pos;
+      if (pet.strikeAnim) {
+        const t = Math.min(1, Math.max(0, 1 - (pet.strikeAnim.until - world.time) / PET_STRIKE_TIME));
+        const reach = Math.sin(t * Math.PI) * 0.8;
+        x += (pet.strikeAnim.to.x - x) * reach;
+        z += (pet.strikeAnim.to.z - z) * reach;
+      }
+      e.model.position.set(x, 0, z);
+      e.model.rotation.y = facingToRotationY(pet.facing);
+      e.model.userData.parts.body.position.y = Math.abs(Math.sin(clock * PET_HOP_SPEED)) * PET_HOP_HEIGHT;
+    }
+    for (const [id, e] of pets) {
+      if (!seen.has(id)) {
+        remove(e.model);
+        pets.delete(id);
+      }
+    }
+  }
+
   function syncWarnings(dt) {
     for (const w of warnings) {
       w.left -= dt;
@@ -155,6 +194,7 @@ export function createBattleView(scene, { tintP2 = false } = {}) {
       for (const f of world.fighters) syncFighter(f, world.time, dt);
       syncProjectiles(world, dt);
       syncZones(world);
+      syncPets(world);
       syncWarnings(dt);
     },
     handleEvents(events) {
@@ -177,6 +217,7 @@ export function createBattleView(scene, { tintP2 = false } = {}) {
     },
     fighterModel: (id) => fighters.get(id)?.model ?? null,
     statusFor: (id) => fighters.get(id)?.status ?? null,
+    petModel: (ownerId) => pets.get(ownerId)?.model ?? null,
     get projectileCount() { return projectiles.size; },
     get zoneCount() { return zones.size; },
     get warningCount() { return warnings.length; },
@@ -185,7 +226,9 @@ export function createBattleView(scene, { tintP2 = false } = {}) {
       for (const m of projectiles.values()) remove(m);
       for (const m of zones.values()) remove(m);
       for (const w of warnings) remove(w.mesh);
+      for (const e of pets.values()) remove(e.model);
       fighters.clear();
+      pets.clear();
       projectiles.clear();
       zones.clear();
       warnings = [];

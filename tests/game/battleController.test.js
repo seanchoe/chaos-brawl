@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { quickLoadout, buildMatchConfig, createBattleController, IDLE_INPUT } from '../../src/game/battleController.js';
+import { quickLoadout, buildMatchConfig, createBattleController, IDLE_INPUT, rewardMatch } from '../../src/game/battleController.js';
+import { createSave } from '../../src/logic/save.js';
+import { PET_IDS } from '../../src/data/pets.js';
 import { INTRO_TIME } from '../../src/logic/match.js';
 import { mulberry32 } from '../../src/logic/random.js';
 import { DT } from '../../src/logic/constants.js';
@@ -61,5 +63,28 @@ describe('createBattleController', () => {
     run(c, 1, { p1: IDLE_INPUT, p2: IDLE_INPUT });
     expect(c.match.world.time).toBe(t);
     expect(c.isOver).toBe(true);
+  });
+});
+
+describe('pets and rewards', () => {
+  it('brings each player’s pet, and gives the CPU a pet only when Player 1 has one', () => {
+    const withPet = buildMatchConfig({ mode: 'cpu', p1: { characterId: 'bubbles', tier: 1, petId: 'hops' } }, () => 0);
+    expect(withPet.p1.petId).toBe('hops');
+    expect(withPet.p2.petId).toBe(PET_IDS[0]);
+    const noPet = buildMatchConfig({ mode: 'cpu', p1: { characterId: 'bubbles', tier: 1, petId: null } }, () => 0);
+    expect(noPet.p2.petId).toBeNull();
+    const twoP = buildMatchConfig({ mode: '2p', p1: { characterId: 'bubbles', tier: 1, petId: null }, p2: { characterId: 'rex', tier: 1, petId: 'ember' } });
+    expect(twoP.p2.petId).toBe('ember');
+    expect(createBattleController(twoP).match.world.pets.map((p) => p.def.id)).toEqual(['ember']);
+  });
+
+  it('adds coins (and XP) for a finished match, sharing one wallet in 2 Players', () => {
+    const c = createBattleController(buildMatchConfig({ mode: '2p', p1: { characterId: 'sparkle', tier: 1 }, p2: { characterId: 'rex', tier: 1 } }));
+    Object.assign(c.match, { state: 'matchOver', winner: 'p1', wins: { p1: 2, p2: 1 } });
+    const save = createSave();
+    const { save: next, coins } = rewardMatch(save, c.match);
+    expect(coins).toBe(30 + 10 + 15 + 5);
+    expect(next.coins).toBe(save.coins + coins);
+    expect(next.characters.sparkle.xp).toBeGreaterThan(0);
   });
 });
