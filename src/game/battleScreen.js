@@ -6,6 +6,7 @@ import { createEffects } from '../render/effects.js';
 import { computeCamera, smoothToward, CAMERA } from '../render/math.js';
 import { createHud, hudState, bannerFor } from '../ui/hud.js';
 import { createKeyboard } from '../input/keyboard.js';
+import { createTouchControls, isTouchDevice, mergeInput } from '../input/touch.js';
 import { createLoop } from './loop.js';
 import { createBattleController } from './battleController.js';
 import { drainEvents } from '../logic/world.js';
@@ -34,6 +35,10 @@ export function mountBattle({ root, config, onExit }) {
   const effects = createEffects({ scene: gfx.scene, container: stage });
   const hud = createHud(stage);
   const keyboard = createKeyboard(window);
+  const touch = isTouchDevice()
+    ? createTouchControls(stage, { players: config.mode === '2p' ? ['p1', 'p2'] : ['p1'], onPause: togglePause })
+    : null;
+  if (touch) stage.classList.add('touch-mode');
   const overlay = el('div', 'overlay', stage);
   overlay.hidden = true;
 
@@ -45,6 +50,7 @@ export function mountBattle({ root, config, onExit }) {
   // Drop stale key presses and focus (e.g. from the menu) so they can't pause or click buttons.
   function resetInputFocus() {
     keyboard.clearPresses();
+    touch?.reset();
     document.activeElement?.blur?.();
   }
 
@@ -67,6 +73,12 @@ export function mountBattle({ root, config, onExit }) {
   function hideOverlay() {
     overlay.hidden = true;
     overlay.innerHTML = '';
+  }
+
+  function togglePause() {
+    if (resultShown) return;
+    if (loop.paused) loop.resume();
+    else loop.pause();
   }
 
   function showPause() {
@@ -98,15 +110,17 @@ export function mountBattle({ root, config, onExit }) {
     resetInputFocus();
   }
 
+  function readPlayer(id) {
+    const keys = keyboard.input(id);
+    return touch ? mergeInput(keys, touch.input(id)) : keys;
+  }
+
   function step(dt) {
-    controller.step(dt, { p1: keyboard.input('p1'), p2: keyboard.input('p2') });
+    controller.step(dt, { p1: readPlayer('p1'), p2: readPlayer('p2') });
   }
 
   function render(frameSeconds, paused) {
-    if (keyboard.consumePress('Escape') && !resultShown) {
-      if (loop.paused) loop.resume();
-      else loop.pause();
-    }
+    if (keyboard.consumePress('Escape')) togglePause();
     keyboard.clearPresses();
 
     const { world } = controller.match;
@@ -129,7 +143,9 @@ export function mountBattle({ root, config, onExit }) {
 
     const { width, height } = gfx.size();
     effects.update(dt, gfx.camera, width, height);
-    hud.update(hudState(controller.match));
+    const hudNow = hudState(controller.match);
+    hud.update(hudNow);
+    touch?.update(hudNow.players);
     gfx.render();
 
     if (controller.isOver && !resultShown) {
@@ -144,6 +160,7 @@ export function mountBattle({ root, config, onExit }) {
     dt: DT,
     onPauseChange: (paused) => {
       if (resultShown) return;
+      touch?.reset();
       if (paused) showPause();
       else hideOverlay();
     },
@@ -155,6 +172,7 @@ export function mountBattle({ root, config, onExit }) {
     effects.dispose();
     view.clear();
     hud.dispose();
+    touch?.dispose();
     disposeObject(arena);
     gfx.dispose();
     root.innerHTML = '';
