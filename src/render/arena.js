@@ -4,6 +4,8 @@ import { toonMaterial } from './models.js';
 
 const WALL_RADIUS = ARENA_RADIUS + 0.6;
 const ISLAND_RADIUS = ARENA_RADIUS + 2;
+// Wide enough that its edge is hidden in the fog, so the meadow reaches the horizon.
+const GROUND_RADIUS = 150;
 
 export function buildArena() {
   const arena = new THREE.Group();
@@ -20,10 +22,13 @@ export function buildArena() {
   ring.position.y = 0.01;
   arena.add(ring);
 
-  const dirt = new THREE.Mesh(new THREE.ConeGeometry(ISLAND_RADIUS, 7, 48), toonMaterial(0xc08552));
-  dirt.rotation.x = Math.PI;
-  dirt.position.y = -4.5;
-  arena.add(dirt);
+  // The meadow sits just below the arena's grass so the arena still stands out.
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(GROUND_RADIUS, 64), toonMaterial(0x69db7c));
+  ground.name = 'ground';
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.05;
+  ground.receiveShadow = true;
+  arena.add(ground);
 
   const wall = new THREE.Mesh(new THREE.TorusGeometry(WALL_RADIUS, 0.35, 10, 64), toonMaterial(0xffd6e7));
   wall.rotation.x = Math.PI / 2;
@@ -34,6 +39,13 @@ export function buildArena() {
   for (let i = 0; i < 8; i++) {
     const a = (i / 8) * Math.PI * 2 + 0.3;
     arena.add(buildTree(Math.cos(a) * (ISLAND_RADIUS - 0.8), Math.sin(a) * (ISLAND_RADIUS - 0.8)));
+  }
+
+  // A looser ring of trees out in the meadow.
+  for (let i = 0; i < 14; i++) {
+    const a = (i / 14) * Math.PI * 2 + 0.1;
+    const r = 22 + (i % 3) * 6;
+    arena.add(buildTree(Math.cos(a) * r, Math.sin(a) * r));
   }
 
   for (let i = 0; i < 6; i++) {
