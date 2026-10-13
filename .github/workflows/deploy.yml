@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      # Local installs may record a private registry mirror, which runners can't reach.
+      - name: Point lockfile at the public npm registry
+        run: perl -pi -e 's#"resolved": "https://[^"]+?/((?:@[^/"]+/)?[^/"]+/-/[^/"]+\.tgz)"#"resolved": "https://registry.npmjs.org/$1"#' package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm run build
