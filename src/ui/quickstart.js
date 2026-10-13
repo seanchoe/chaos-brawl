@@ -1,5 +1,6 @@
 import { CHARACTERS } from '../data/characters.js';
 import { getWeaponLine } from '../data/weapons.js';
+import { isTouchDevice } from '../input/touch.js';
 
 const DEFAULT_CHOICE = {
   mode: 'cpu',
@@ -29,6 +30,7 @@ function buttonRow(parent, className, items, dataKey) {
 }
 
 export function renderQuickStart(root, onStart, initial = DEFAULT_CHOICE) {
+  const touch = isTouchDevice();
   const state = clone({ ...DEFAULT_CHOICE, ...initial });
   root.innerHTML = '';
   const screen = el('div', 'screen quickstart', root);
@@ -53,13 +55,13 @@ export function renderQuickStart(root, onStart, initial = DEFAULT_CHOICE) {
     }
     const label = el('label', 'weapon-label', panel, 'Weapon (test any tier) ');
     const select = el('select', 'weapon-select', label);
-    el('p', 'keys-help', panel, keys);
+    el('p', 'keys-help', panel, touch ? 'Use the stick and buttons on your side of the screen.' : keys);
     panelUi[id] = { panel, select };
   }
 
   const start = el('button', 'start-button', screen, 'FIGHT!');
   start.type = 'button';
-  el('p', 'keys-help', screen, 'Esc pauses the game.');
+  el('p', 'keys-help', screen, touch ? 'Tap II to pause the game.' : 'Esc pauses the game.');
 
   function fillWeapons(id) {
     const { select } = panelUi[id];

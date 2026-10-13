@@ -11,6 +11,9 @@ body {
   background: linear-gradient(#9bdcff, #d0f4ff);
   color: #2b2d42;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button { font: inherit; cursor: pointer; }
@@ -118,7 +121,7 @@ button { font: inherit; cursor: pointer; }
 
 /* ---------- Battle stage ---------- */
 
-.stage { position: relative; width: 100%; height: 100%; }
+.stage { position: relative; width: 100%; height: 100%; touch-action: none; }
 .stage canvas { display: block; }
 
 .hud { position: absolute; inset: 0; pointer-events: none; }
@@ -272,5 +275,100 @@ button { font: inherit; cursor: pointer; }
 }
 
 .overlay-title { margin: 0 0 16px; font-size: 36px; color: #7048e8; }
+
+/* ---------- Touch controls (iPad / tablets) ---------- */
+
+/* The touch buttons show the ability names and cooldowns instead. */
+.stage.touch-mode .hud-bottom { display: none; }
+
+.touch { position: absolute; inset: 0; pointer-events: none; }
+
+.touch-pause {
+  position: absolute;
+  top: calc(80px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(43, 45, 66, 0.45);
+  pointer-events: auto;
+}
+
+.touch-stick,
+.touch-buttons {
+  position: absolute;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.touch-stick {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border: 4px solid rgba(255, 255, 255, 0.7);
+  display: grid;
+  place-items: center;
+}
+
+.touch-knob {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.touch-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 84px);
+  grid-template-areas: ". special" "jump attack";
+  gap: 10px;
+}
+
+.touch-button {
+  --cd: 0;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.1;
+  color: #2b2d42;
+  background: conic-gradient(rgba(0, 0, 0, 0.45) calc(var(--cd) * 360deg), #ffd43b 0);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.touch-button.jump { grid-area: jump; background: #8ce99a; }
+.touch-button.attack { grid-area: attack; }
+.touch-button.special { grid-area: special; }
+.touch-button.ready { box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2), 0 0 14px #ffd43b; }
+.touch-button.held { transform: scale(0.92); filter: brightness(0.9); }
+.touch-button-name { pointer-events: none; }
+
+/* Vs Computer: stick on the left, buttons on the right. */
+.touch.solo .touch-stick.p1 { left: calc(28px + env(safe-area-inset-left)); }
+.touch.solo .touch-buttons.p1 { right: calc(28px + env(safe-area-inset-right)); }
+
+/* 2 Players on one screen: each player gets a stick and buttons on their own side. */
+.touch.duo .touch-stick { width: 130px; height: 130px; }
+.touch.duo .touch-buttons { grid-template-columns: repeat(2, 72px); }
+.touch.duo .touch-button { width: 72px; height: 72px; font-size: 12px; }
+.touch.duo .touch-stick.p1 { left: calc(16px + env(safe-area-inset-left)); }
+.touch.duo .touch-buttons.p1 { left: calc(160px + env(safe-area-inset-left)); }
+.touch.duo .touch-buttons.p2 { right: calc(160px + env(safe-area-inset-right)); }
+.touch.duo .touch-stick.p2 { right: calc(16px + env(safe-area-inset-right)); }
 
 [hidden] { display: none !important; }
