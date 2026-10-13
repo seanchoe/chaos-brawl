@@ -1,5 +1,7 @@
 # Chaos Brawl — Design Spec
 
+> **Addendum:** `2026-10-11-characters-and-unlocks-design.md` adds 4 characters (8 total, 88 weapons) and coin-based unlocking of weapons and characters. It overrides this document where they differ.
+
 A kid-friendly, browser-based 3D battle game. Two characters fight in a small arena using weapons and special abilities. Each character's weapon evolves through 11 forms as the character levels from 1 to 100, with progress saved between matches.
 
 ## Goals
@@ -117,9 +119,9 @@ A special may chain several primitives (e.g. `shield` then `burst` when it ends)
 
 | Character | Style | Base stats |
 |-----------|-------|-----------|
-| **Sir Sparkle** — little knight in pink/silver armor | Close-range melee | Speed medium, damage high |
+| **Sir Sparkle** — little knight in pink/silver armor | Close-range melee | Speed medium, damage highest (strongest hitter up close) |
 | **Bubbles** — tiny wizard with a big starry hat | Long-range magic | Speed medium, damage low, range long |
-| **Chef Pancake** — round chef with tall hat | Mid-range throwing | Speed slow, energy-tough (takes 10% less damage) |
+| **Chef Pancake** — round chef with tall hat | Mid-range throwing | Speed slow, damage medium-high, energy-tough (takes 10% less damage) |
 | **Robo Rex** — friendly robot dinosaur | Blasters | Speed fast, damage medium |
 
 Same-character mirror matches are allowed; Player 2 gets an alternate color tint.

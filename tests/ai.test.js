@@ -32,7 +32,7 @@ describe('pickAIOpponent', () => {
 
 describe('ability helpers', () => {
   it('estimates reach', () => {
-    expect(abilityReach(getWeapon('sparkle', 1).basic)).toBeCloseTo(2.5);
+    expect(abilityReach(getWeapon('sparkle', 1).basic)).toBeCloseTo(2.6);
     expect(abilityReach(getWeapon('rex', 1).basic)).toBeCloseTo(16);
     expect(abilityReach(getWeapon('bubbles', 10).special)).toBe(15);
   });

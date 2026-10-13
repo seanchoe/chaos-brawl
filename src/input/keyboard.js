@@ -1,0 +1,72 @@
+export const BINDINGS = {
+  p1: { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD', jump: 'Space', attack: 'KeyF', special: 'KeyG' },
+  p2: { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight', jump: 'Enter', attack: 'KeyK', special: 'KeyL' },
+};
+
+const GAME_KEYS = new Set(Object.values(BINDINGS).flatMap((b) => Object.values(b)));
+
+const LABELS = { ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→', Space: 'Space', Enter: 'Enter', Escape: 'Esc' };
+
+export function keyLabel(code) {
+  if (code.startsWith('Key')) return code.slice(3);
+  return LABELS[code] ?? code;
+}
+
+export function readInput(down, b) {
+  return {
+    moveX: (down.has(b.right) ? 1 : 0) - (down.has(b.left) ? 1 : 0),
+    moveZ: (down.has(b.down) ? 1 : 0) - (down.has(b.up) ? 1 : 0),
+    jump: down.has(b.jump),
+    attack: down.has(b.attack),
+    special: down.has(b.special),
+  };
+}
+
+export function createKeyboard(target = globalThis.window, doc = globalThis.document) {
+  const down = new Set();
+  const pressed = new Set();
+
+  const onDown = (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target?.closest?.('input, select, textarea, button') && e.code !== 'Escape') return;
+    if (GAME_KEYS.has(e.code)) e.preventDefault();
+    if (!e.repeat) pressed.add(e.code);
+    down.add(e.code);
+  };
+  const onUp = (e) => {
+    // macOS sends no keyup for letters while Cmd is held, so drop everything when Cmd is released.
+    if (e.code === 'MetaLeft' || e.code === 'MetaRight') down.clear();
+    else down.delete(e.code);
+  };
+  const onBlur = () => { down.clear(); };
+  const onVisibility = () => { if (doc?.hidden) down.clear(); };
+
+  target.addEventListener('keydown', onDown);
+  target.addEventListener('keyup', onUp);
+  target.addEventListener('blur', onBlur);
+  target.addEventListener('pagehide', onBlur);
+  doc?.addEventListener('visibilitychange', onVisibility);
+
+  return {
+    input(player) {
+      return readInput(down, BINDINGS[player]);
+    },
+    consumePress(code) {
+      const had = pressed.has(code);
+      pressed.delete(code);
+      return had;
+    },
+    clearPresses() {
+      pressed.clear();
+    },
+    dispose() {
+      target.removeEventListener('keydown', onDown);
+      target.removeEventListener('keyup', onUp);
+      target.removeEventListener('blur', onBlur);
+      target.removeEventListener('pagehide', onBlur);
+      doc?.removeEventListener('visibilitychange', onVisibility);
+      down.clear();
+      pressed.clear();
+    },
+  };
+}

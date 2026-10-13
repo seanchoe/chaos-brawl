@@ -11,7 +11,7 @@ describe('fighter', () => {
   it('starts with full energy and level-scaled stats', () => {
     const f = createFighter({ id: 'p1', character: getCharacter('sparkle'), level: 100, weapon: getWeapon('sparkle', 11) });
     expect(f.energy).toBe(100);
-    expect(f.damageMult).toBeCloseTo(1.15 * 1.495);
+    expect(f.damageMult).toBeCloseTo(1.4 * 1.495);
     expect(f.speedMult).toBeCloseTo(1.099);
     expect(f.ko).toBe(false);
   });

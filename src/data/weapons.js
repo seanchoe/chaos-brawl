@@ -9,7 +9,7 @@ const BASICS = {
     name: 'Sword Swing',
     description: 'Swing your sword up close.',
     cooldown: 0.45,
-    steps: [{ type: 'melee', damage: 6 + 0.4 * (t - 1), range: 1.9, arc: 110, knockback: 3, popup: 'BONK!' }],
+    steps: [{ type: 'melee', damage: 6 + 0.4 * (t - 1), range: 2.0, arc: 110, knockback: 3, popup: 'BONK!' }],
   }),
   bubbles: (t) => ({
     name: 'Bubble Shot',
