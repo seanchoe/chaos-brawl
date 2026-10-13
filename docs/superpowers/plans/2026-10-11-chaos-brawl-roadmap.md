@@ -11,7 +11,7 @@ The game is built in 5 plans. Each plan ends with working, tested software. Each
 | 3a | **More characters & unlocks** | 4 new characters (data, 44 weapons, models, weapon visuals), coin unlocks for weapons and characters (logic), save v2 + migration, balance on Easy/Medium/Hard for all 8. See `specs/2026-10-11-characters-and-unlocks-design.md`. | To write |
 | 3b | **Menus, progression & audio** | Title, mode, difficulty, character select (levels/XP bars, locked characters + unlock buttons), weapon select (owned / unlock for coins / reach level), pet picker, results screen (XP, coins, level-ups, "NEW WEAPON AVAILABLE!"), pause menu, settings (mute, reset progress), How to Play, save integration and storage-unavailable notice, synthesized sound effects. Replaces quick start. | To write |
 | 4 | **Training Ground** | Practice yard scene, Training Bot model and behaviors, Tab options panel (weapon switcher, toggles, bot behavior), Show Hit Areas rendering, live stats panel, options remembered in save. | To write |
-| 5 | **Pet Shop** | Shop screen with rotating 3D pet previews, buy/owned/not-enough-coins states, coin display on title, pet models + follow/strike animations in battle, final full play-through check. | To write |
+| 5 | **Pet Shop** | Shop screen with rotating 3D pet previews, buy/owned/not-enough-coins states, coin display on title, pet models + follow/strike animations in battle, final full play-through check. | Built early on the quick start (shop, coins, pet picker, battle pets). Still to do: move into the 3b menus, final play-through check. |
 
 ## Carry-over notes from the Plan 1 final review
 

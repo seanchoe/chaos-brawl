@@ -119,6 +119,100 @@ button { font: inherit; cursor: pointer; }
 
 .start-button:active { transform: translateY(4px); box-shadow: 0 2px 0 #c92a2a; }
 
+/* ---------- Coins & Pet Shop ---------- */
+
+.wallet-bar {
+  width: min(880px, 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.coin-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.12);
+}
+
+.coin-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3bf, #ffd43b 45%, #f59f00);
+  border: 2px solid #e67700;
+}
+
+.shop-button { background: #ffd43b; }
+.pet-select { margin-top: 6px; width: 100%; font-size: 16px; padding: 6px; border-radius: 10px; }
+
+.shop-notice {
+  margin: 0;
+  padding: 10px 20px;
+  border-radius: 18px;
+  background: #d3f9d8;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.pet-grid {
+  width: min(880px, 100%);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.pet-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 4px solid transparent;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);
+}
+
+.pet-card.owned { border-color: #40c057; }
+
+.pet-preview { width: 140px; height: 140px; }
+
+.pet-swatch {
+  width: 110px;
+  height: 110px;
+  margin: 15px;
+  border-radius: 50%;
+  background: var(--pet-color);
+  border: 4px solid #2b2d42;
+}
+
+.pet-name { margin: 4px 0 0; font-size: 22px; }
+.pet-species { margin: 0; font-size: 14px; opacity: 0.7; }
+.pet-move { margin: 8px 0 0; font-weight: bold; color: #7048e8; }
+.pet-description { margin: 2px 0 10px; font-size: 14px; flex: 1; }
+
+.pet-buy {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background: #ff6b6b;
+  box-shadow: 0 4px 0 #c92a2a;
+}
+
+.pet-buy:disabled { cursor: default; color: #495057; background: #dee2e6; box-shadow: 0 4px 0 #adb5bd; }
+.pet-card.owned .pet-buy:disabled { color: #fff; background: #40c057; box-shadow: 0 4px 0 #2b8a3e; }
+
 /* ---------- Battle stage ---------- */
 
 .stage { position: relative; width: 100%; height: 100%; touch-action: none; }
@@ -275,6 +369,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 .overlay-title { margin: 0 0 16px; font-size: 36px; color: #7048e8; }
+.overlay-note { margin: -6px 0 16px; font-size: 20px; font-weight: bold; color: #e67700; }
 
 /* ---------- Touch controls (iPad / tablets) ---------- */
 

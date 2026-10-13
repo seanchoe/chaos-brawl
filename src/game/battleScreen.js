@@ -22,7 +22,8 @@ function el(tag, className, parent, text) {
   return node;
 }
 
-export function mountBattle({ root, config, onExit }) {
+// onMatchOver(match) runs once per finished match and may return a line to show on the results, e.g. coins earned.
+export function mountBattle({ root, config, onExit, onMatchOver = () => null }) {
   root.innerHTML = '';
   const stage = el('div', 'stage', root);
   const gfx = createRenderer(stage);
@@ -54,10 +55,11 @@ export function mountBattle({ root, config, onExit }) {
     document.activeElement?.blur?.();
   }
 
-  function showOverlay(title, buttons) {
+  function showOverlay(title, buttons, note = null) {
     overlay.innerHTML = '';
     const box = el('div', 'overlay-box', overlay);
     el('h2', 'overlay-title', box, title);
+    if (note) el('p', 'overlay-note', box, note);
     const row = el('div', 'button-row', box);
     for (const { label, onClick } of buttons) {
       const b = el('button', 'choice big', row, label);
@@ -91,10 +93,11 @@ export function mountBattle({ root, config, onExit }) {
   function showResults() {
     resultShown = true;
     stage.classList.add('results');
+    const note = onMatchOver(controller.match);
     showOverlay(bannerFor(controller.match), [
       { label: 'Rematch', onClick: rematch },
       { label: 'Back', onClick: exit },
-    ]);
+    ], note);
   }
 
   function rematch() {
